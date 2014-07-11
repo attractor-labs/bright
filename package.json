@@ -1,0 +1,8 @@
+{
+  "name": "bright",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "node-minify": ">=0.7.5"
+  }
+}
