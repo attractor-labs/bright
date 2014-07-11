@@ -6,6 +6,14 @@ describe('Bright', function() {
 
   describe('size getter and setter methods', function() {
 
+    it('should return default chart type', function() {
+      assert.equal(Bright().chart_type(), 'linear');
+    });
+
+    it('should return specified chart type', function() {
+      assert.equal(Bright().chart_type('area').chart_type(), 'area');
+    });
+
     it('should return default stream function', function() {
       assert.equal(Bright().data_stream(), null);
     });

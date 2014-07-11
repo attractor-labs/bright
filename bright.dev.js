@@ -3,9 +3,15 @@ function Bright() {
     , height          = 200
     , render_target   = 'body'
     , initial_dataset = []
-    , data_stream     = null;
+    , data_stream     = null
+    , chart_type      = 'linear';
 
   function chart() {}
+
+  chart.chart_type = function(type) {
+    if (!arguments.length) return chart_type; chart_type = type;
+    return chart;
+  }
 
   chart.initial_dataset = function(dataset) {
     if (!arguments.length) return initial_dataset; initial_dataset = dataset;
