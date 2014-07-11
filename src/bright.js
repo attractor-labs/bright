@@ -1,21 +1,18 @@
 function Bright() {
-  var width  = 720
-    , height = 80;
+  var width  = 100
+    , height = 200;
 
-  function my() {
-  }
+  function chart() {}
 
-  my.width = function(value) {
-    if (!arguments.length) return width;
-    width = value;
-    return my;
+  chart.width = function(value) {
+    if (!arguments.length) return width; width = value;
+    return chart;
   };
 
-  my.height = function(value) {
-    if (!arguments.length) return height;
-    height = value;
-    return my;
+  chart.height = function(value) {
+    if (!arguments.length) return height; height = value;
+    return chart;
   };
 
-  return my;
+  return chart;
 }
