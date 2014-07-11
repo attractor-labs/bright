@@ -6,6 +6,14 @@ describe('Bright', function() {
 
   describe('size getter and setter methods', function() {
 
+    it('should return default initial dataset', function() {
+      assert.equal(JSON.stringify(Bright().initial_dataset()), '[]');
+    });
+
+    it('should return specified initial dataset', function() {
+      assert.equal(JSON.stringify(Bright().initial_dataset(['foo']).initial_dataset()), '["foo"]');
+    });
+
     it('should return default render target', function() {
       assert.equal(Bright().render_target(), 'body');
     });
