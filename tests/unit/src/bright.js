@@ -6,6 +6,14 @@ describe('Bright', function() {
 
   describe('size getter and setter methods', function() {
 
+    it('should return default render target', function() {
+      assert.equal(Bright().render_target(), 'body');
+    });
+
+    it('should return specified render target', function() {
+      assert.equal(Bright().render_target('foo').render_target(), 'foo');
+    });
+
     it('should return default width', function() {
       assert.equal(Bright().width(), 100);
     });
