@@ -2,12 +2,18 @@ function Bright() {
   var width           = 100
     , height          = 200
     , render_target   = 'body'
-    , initial_dataset = [];
+    , initial_dataset = []
+    , data_stream     = null;
 
   function chart() {}
 
   chart.initial_dataset = function(dataset) {
     if (!arguments.length) return initial_dataset; initial_dataset = dataset;
+    return chart;
+  }
+
+  chart.data_stream = function(stream_function) {
+    if (!arguments.length) return data_stream; data_stream = stream_function;
     return chart;
   }
 

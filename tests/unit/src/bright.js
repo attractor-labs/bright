@@ -6,6 +6,18 @@ describe('Bright', function() {
 
   describe('size getter and setter methods', function() {
 
+    it('should return default stream function', function() {
+      assert.equal(Bright().data_stream(), null);
+    });
+
+    it('should return specified stream function', function(done) {
+      var test_func = function (callback) { return callback(null, 100500) }
+      Bright().data_stream(test_func).data_stream()(function(test_func_error, test_func_result) {
+        assert.equal(test_func_result, 100500);
+        done();
+      });
+    });
+
     it('should return default initial dataset', function() {
       assert.equal(JSON.stringify(Bright().initial_dataset()), '[]');
     });
