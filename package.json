@@ -3,6 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "node-minify": ">=0.7.5"
+    "node-minify": ">=0.7.5",
+    "mocha": ">=1.18.2",
+    "xmlhttprequest": ">=1.6.0",
+    "jsdom": ">=0.11.1",
+    "chai": ">=1.9.1"
   }
 }
+
+
