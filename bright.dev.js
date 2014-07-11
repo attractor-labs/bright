@@ -1,3 +1,6 @@
+function BrightBasic () {
+
+}
 function Bright() {
   var width           = 100
     , height          = 200
@@ -37,6 +40,10 @@ function Bright() {
     if (!arguments.length) return height; height = value;
     return chart;
   };
+
+  chart.activate = function() {
+    d3.select(chart.render_target).call(chart)
+  }
 
   return chart;
 }

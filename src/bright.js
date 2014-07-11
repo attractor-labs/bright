@@ -38,5 +38,9 @@ function Bright() {
     return chart;
   };
 
+  chart.activate = function() {
+    d3.select(chart.render_target).call(chart)
+  }
+
   return chart;
 }

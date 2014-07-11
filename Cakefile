@@ -13,6 +13,7 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/basic.js",
   "src/bright.js"
 ]
 
