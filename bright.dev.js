@@ -1,12 +1,41 @@
+function BrightStackedArea (chart_settings) {
+
+  function chart() {
+    var output = {}
+
+    var area = d3.svg.area()
+                 .x(function(d) { return chart_settings.x_scale(d.date); })
+                 .y0(function(d) { return chart_settings.y_scale(d.y0); })
+                 .y1(function(d) { return chart_settings.y_scale(d.y0 + d.y); });
+
+    output.chart_place = chart_settings.canvas().selectAll()
+                                       .data(chart_settings.dataset()).enter().append("g");
+
+    output.chart = output.chart_place.append("path")
+                         .attr("class", "area").attr("d", function(d) { return area(d.values); })
+                         .style("fill", function(d) { return chart_settings.color(d.name); });
+
+    return output;
+  }
+
+  return chart();
+}
+
 function BrightReader (reader_settings) {
 
   var dataset         = reader_settings.dataset()
-    , stacked_dataset = null;
+    , stacked_dataset = null
+    , color           = null;
 
   function reader() {
     var output = {}; reader.parse_dates();
+
+    color = d3.scale.category20()
+    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
+
     output.dataset         = reader.dataset;
     output.stacked_dataset = reader.stacked_dataset;
+    output.color           = reader.color();
     return output;
   }
 
@@ -14,11 +43,13 @@ function BrightReader (reader_settings) {
     return dataset;
   }
 
+  reader.color = function () {
+    return color;
+  }
+
   reader.stacked_dataset = function () {
     if (stacked_dataset) { return stacked_dataset } else {
       var stack = d3.layout.stack().values(function(d) { return d.values; })
-      var color = d3.scale.category20();
-      color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
       stacked_dataset = stack(color.domain().map(function(name) {
         return { name: name, values: dataset.map(function(d) { return { date: d.date, y: d[name] / 100 } }) };
       }));
@@ -38,27 +69,6 @@ function BrightReader (reader_settings) {
 
   return reader();
 }
-
-
-// var parseDate = d3.time.format("%y-%b-%d").parse,
-  // data.forEach(function(d) {
-  //   d.date = parseDate(d.date);
-  // });
-
-// var stack = d3.layout.stack()
-//     .values(function(d) { return d.values; });
-
-// color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-
-
-  // var browsers = stack(color.domain().map(function(name) {
-  //   return {
-  //     name: name,
-  //     values: data.map(function(d) {
-  //       return {date: d.date, y: d[name] / 100};
-  //     })
-  //   };
-  // }));
 
 function BrightAxis (axis_settings) {
 
@@ -133,11 +143,12 @@ function BrightBuilder (chart_elements) {
   var canvas_object  = null
     , scales_object  = null
     , axis_object    = null
-    , dataset_object = null;
+    , dataset_object = null
+    , chart_object   = null;
 
   function builder () {
     builder.draw_canvas().read_initial_dataset()
-           .prepare_scales().build_axis();
+           .prepare_scales().build_axis().build_chart();
   }
 
   builder.read_initial_dataset = function () {
@@ -175,6 +186,18 @@ function BrightBuilder (chart_elements) {
     axis_settings.y_scale   = scales_object.y_scale;
     axis_settings.height    = canvas_object.inner_height;
     axis_object             = chart_elements.axis(axis_settings);
+
+    return builder;
+  }
+
+  builder.build_chart = function () {
+    var chart_settings       = {};
+    chart_settings.canvas    = canvas_object.canvas;
+    chart_settings.dataset   = dataset_object.stacked_dataset;
+    chart_settings.color     = dataset_object.color;
+    chart_settings.x_scale   = scales_object.x_scale;
+    chart_settings.y_scale   = scales_object.y_scale;
+    chart_object             = chart_elements.chart(chart_settings);
 
     return builder;
   }
@@ -219,15 +242,6 @@ function BrightCanvas (canvas_settings) {
   return canvas();
 }
 
-function BrightStackedArea (parent_chart) {
-
-  function chart() {
-    alert('YO! ' + parent_chart.render_target())
-  }
-
-  return chart;
-}
-
 function Bright() {
   var width              = 100
     , height             = 200
@@ -245,6 +259,10 @@ function Bright() {
     chart_elements.chart          = BrightStackedArea
     chart_elements.reader         = BrightReader
     BrightBuilder(chart_elements).build()
+  }
+
+  settings.activate = function() {
+    settings()
   }
 
   settings.chart_type = function(type) {

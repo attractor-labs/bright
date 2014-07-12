@@ -17,6 +17,10 @@ function Bright() {
     BrightBuilder(chart_elements).build()
   }
 
+  settings.activate = function() {
+    settings()
+  }
+
   settings.chart_type = function(type) {
     if (!arguments.length) return chart_type; chart_type = type;
     return settings;

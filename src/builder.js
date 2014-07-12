@@ -2,11 +2,12 @@ function BrightBuilder (chart_elements) {
   var canvas_object  = null
     , scales_object  = null
     , axis_object    = null
-    , dataset_object = null;
+    , dataset_object = null
+    , chart_object   = null;
 
   function builder () {
     builder.draw_canvas().read_initial_dataset()
-           .prepare_scales().build_axis();
+           .prepare_scales().build_axis().build_chart();
   }
 
   builder.read_initial_dataset = function () {
@@ -44,6 +45,18 @@ function BrightBuilder (chart_elements) {
     axis_settings.y_scale   = scales_object.y_scale;
     axis_settings.height    = canvas_object.inner_height;
     axis_object             = chart_elements.axis(axis_settings);
+
+    return builder;
+  }
+
+  builder.build_chart = function () {
+    var chart_settings       = {};
+    chart_settings.canvas    = canvas_object.canvas;
+    chart_settings.dataset   = dataset_object.stacked_dataset;
+    chart_settings.color     = dataset_object.color;
+    chart_settings.x_scale   = scales_object.x_scale;
+    chart_settings.y_scale   = scales_object.y_scale;
+    chart_object             = chart_elements.chart(chart_settings);
 
     return builder;
   }

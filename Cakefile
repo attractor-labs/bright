@@ -13,12 +13,12 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/stacked_area.js",
   "src/reader.js",
   "src/axis.js",
   "src/scales.js",
   "src/builder.js",
   "src/canvas.js",
-  "src/stacked_area.js",
   "src/bright.js"
 ]
 

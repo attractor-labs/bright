@@ -1,12 +1,18 @@
 function BrightReader (reader_settings) {
 
   var dataset         = reader_settings.dataset()
-    , stacked_dataset = null;
+    , stacked_dataset = null
+    , color           = null;
 
   function reader() {
     var output = {}; reader.parse_dates();
+
+    color = d3.scale.category20()
+    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
+
     output.dataset         = reader.dataset;
     output.stacked_dataset = reader.stacked_dataset;
+    output.color           = reader.color();
     return output;
   }
 
@@ -14,11 +20,13 @@ function BrightReader (reader_settings) {
     return dataset;
   }
 
+  reader.color = function () {
+    return color;
+  }
+
   reader.stacked_dataset = function () {
     if (stacked_dataset) { return stacked_dataset } else {
       var stack = d3.layout.stack().values(function(d) { return d.values; })
-      var color = d3.scale.category20();
-      color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
       stacked_dataset = stack(color.domain().map(function(name) {
         return { name: name, values: dataset.map(function(d) { return { date: d.date, y: d[name] / 100 } }) };
       }));
