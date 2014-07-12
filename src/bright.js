@@ -1,12 +1,16 @@
 function Bright() {
-  var width           = 100
-    , height          = 200
-    , render_target   = 'body'
-    , initial_dataset = []
-    , data_stream     = null
-    , chart_type      = 'linear';
+  var width              = 100
+    , height             = 200
+    , render_target      = 'body'
+    , initial_dataset    = []
+    , data_stream        = null
+    , chart_type         = 'linear';
 
-  function chart() {}
+  function chart() {
+    if (chart.chart_type() == 'stacked-area') {
+      BrightStackedArea(chart).activate()
+    }
+  }
 
   chart.chart_type = function(type) {
     if (!arguments.length) return chart_type; chart_type = type;
@@ -39,7 +43,7 @@ function Bright() {
   };
 
   chart.activate = function() {
-    d3.select(chart.render_target).call(chart)
+    return chart()
   }
 
   return chart;
