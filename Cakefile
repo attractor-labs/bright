@@ -13,6 +13,7 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/reader.js",
   "src/axis.js",
   "src/scales.js",
   "src/builder.js",

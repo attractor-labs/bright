@@ -1,10 +1,19 @@
 function BrightBuilder (chart_elements) {
-  var canvas_object = null
-    , scales_object = null
-    , axis_object   = null;
+  var canvas_object  = null
+    , scales_object  = null
+    , axis_object    = null
+    , dataset_object = null;
 
   function builder () {
     builder.draw_canvas().prepare_scales().build_axis();
+  }
+
+  builder.read_initial_dataset = function () {
+    var read_settings     = {};
+    read_settings.dataset = chart_elements.initial_dataset;
+    dataset_object        = chart_elements.reader(read_settings);
+
+    return builder;
   }
 
   builder.draw_canvas = function () {

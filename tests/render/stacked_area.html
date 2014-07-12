@@ -25,7 +25,18 @@ body {
 <body>
 
 <script>
-  var chart = Bright().width(640).height(250)
+  var initial_dataset = [{"date":"11-Oct-13","IE":"141.62","Chrome":"22.36","Firefox":"25.58","Safari":"9.13","Opera":"1.22"},
+                         {"date":"11-Oct-14","IE":"141.95","Chrome":"22.15","Firefox":"25.78","Safari":"8.79","Opera":"1.25"},
+                         {"date":"11-Oct-15","IE":"137.64","Chrome":"24.77","Firefox":"25.96","Safari":"10.16","Opera":"1.39"},
+                         {"date":"11-Oct-16","IE":"37.27","Chrome":"24.65","Firefox":"25.98","Safari":"10.59","Opera":"1.44"},
+                         {"date":"11-Oct-17","IE":"142.74","Chrome":"21.87","Firefox":"25.01","Safari":"9.12","Opera":"1.17"},
+                         {"date":"11-Oct-18","IE":"142.14","Chrome":"22.22","Firefox":"25.26","Safari":"9.1","Opera":"1.19"},
+                         {"date":"11-Oct-19","IE":"41.92","Chrome":"22.42","Firefox":"25.3","Safari":"9.07","Opera":"1.21"},
+                         {"date":"11-Oct-20","IE":"142.41","Chrome":"22.08","Firefox":"25.28","Safari":"8.94","Opera":"1.18"},
+                         {"date":"11-Oct-21","IE":"142.74","Chrome":"22.23","Firefox":"25.19","Safari":"8.5","Opera":"1.25"},
+                         {"date":"11-Oct-22","IE":"136.95","Chrome":"25.45","Firefox":"26.03","Safari":"10.06","Opera":"1.42"}];
+
+  var chart = Bright().width(640).height(250).initial_dataset(initial_dataset)
                       .chart_type('stacked-area').target('body')();
 </script>
 

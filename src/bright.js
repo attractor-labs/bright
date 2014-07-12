@@ -7,12 +7,13 @@ function Bright() {
     , chart_type         = 'stacked-area';
 
   function settings() {
-    var chart_elements      = {};
-    chart_elements.settings = settings
-    chart_elements.canvas   = BrightCanvas
-    chart_elements.scales   = BrightScales
-    chart_elements.axis     = BrightAxis
-    chart_elements.chart    = BrightStackedArea
+    var chart_elements            = {};
+    chart_elements.settings       = settings
+    chart_elements.canvas         = BrightCanvas
+    chart_elements.scales         = BrightScales
+    chart_elements.axis           = BrightAxis
+    chart_elements.chart          = BrightStackedArea
+    chart_elements.reader         = BrightReader
     BrightBuilder(chart_elements).build()
   }
 
