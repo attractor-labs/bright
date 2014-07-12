@@ -38,24 +38,3 @@ function BrightReader (reader_settings) {
 
   return reader();
 }
-
-
-// var parseDate = d3.time.format("%y-%b-%d").parse,
-  // data.forEach(function(d) {
-  //   d.date = parseDate(d.date);
-  // });
-
-// var stack = d3.layout.stack()
-//     .values(function(d) { return d.values; });
-
-// color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-
-
-  // var browsers = stack(color.domain().map(function(name) {
-  //   return {
-  //     name: name,
-  //     values: data.map(function(d) {
-  //       return {date: d.date, y: d[name] / 100};
-  //     })
-  //   };
-  // }));
