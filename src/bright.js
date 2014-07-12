@@ -1,50 +1,48 @@
 function Bright() {
   var width              = 100
     , height             = 200
-    , render_target      = 'body'
+    , target             = 'body'
     , initial_dataset    = []
     , data_stream        = null
-    , chart_type         = 'linear';
+    , chart_type         = 'stacked-area';
 
-  function chart() {
-    if (chart.chart_type() == 'stacked-area') {
-      BrightStackedArea(chart).activate()
-    }
+  function settings() {
+    var chart_elements      = {};
+    chart_elements.settings = settings
+    chart_elements.canvas   = BrightCanvas
+    chart_elements.chart    = BrightStackedArea
+    BrightBuilder(chart_elements).build()
   }
 
-  chart.chart_type = function(type) {
+  settings.chart_type = function(type) {
     if (!arguments.length) return chart_type; chart_type = type;
-    return chart;
+    return settings;
   }
 
-  chart.initial_dataset = function(dataset) {
+  settings.initial_dataset = function(dataset) {
     if (!arguments.length) return initial_dataset; initial_dataset = dataset;
-    return chart;
+    return settings;
   }
 
-  chart.data_stream = function(stream_function) {
+  settings.data_stream = function(stream_function) {
     if (!arguments.length) return data_stream; data_stream = stream_function;
-    return chart;
+    return settings;
   }
 
-  chart.render_target = function(identifier) {
-    if (!arguments.length) return render_target; render_target = identifier;
-    return chart;
+  settings.target = function(identifier) {
+    if (!arguments.length) return target; target = identifier;
+    return settings;
   }
 
-  chart.width = function(value) {
+  settings.width = function(value) {
     if (!arguments.length) return width; width = value;
-    return chart;
+    return settings;
   };
 
-  chart.height = function(value) {
+  settings.height = function(value) {
     if (!arguments.length) return height; height = value;
-    return chart;
+    return settings;
   };
 
-  chart.activate = function() {
-    return chart()
-  }
-
-  return chart;
+  return settings;
 }

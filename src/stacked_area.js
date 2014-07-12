@@ -1,11 +1,7 @@
-function BrightStackedArea (parent_chart, target) {
+function BrightStackedArea (parent_chart) {
 
   function chart() {
-    alert('YO! ' + parent_chart.target)
-  }
-
-  chart.activate = function() {
-    return chart()
+    alert('YO! ' + parent_chart.render_target())
   }
 
   return chart;

@@ -13,6 +13,8 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/builder.js",
+  "src/canvas.js",
   "src/stacked_area.js",
   "src/bright.js"
 ]

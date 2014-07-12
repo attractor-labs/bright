@@ -7,7 +7,7 @@ describe('Bright', function() {
   describe('size getter and setter methods', function() {
 
     it('should return default chart type', function() {
-      assert.equal(Bright().chart_type(), 'linear');
+      assert.equal(Bright().chart_type(), 'stacked-area');
     });
 
     it('should return specified chart type', function() {
@@ -35,11 +35,11 @@ describe('Bright', function() {
     });
 
     it('should return default render target', function() {
-      assert.equal(Bright().render_target(), 'body');
+      assert.equal(Bright().target(), 'body');
     });
 
     it('should return specified render target', function() {
-      assert.equal(Bright().render_target('foo').render_target(), 'foo');
+      assert.equal(Bright().target('foo').target(), 'foo');
     });
 
     it('should return default width', function() {
