@@ -13,6 +13,8 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/axis.js",
+  "src/scales.js",
   "src/builder.js",
   "src/canvas.js",
   "src/stacked_area.js",

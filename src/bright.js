@@ -10,6 +10,8 @@ function Bright() {
     var chart_elements      = {};
     chart_elements.settings = settings
     chart_elements.canvas   = BrightCanvas
+    chart_elements.scales   = BrightScales
+    chart_elements.axis     = BrightAxis
     chart_elements.chart    = BrightStackedArea
     BrightBuilder(chart_elements).build()
   }
