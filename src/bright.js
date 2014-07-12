@@ -49,3 +49,5 @@ function Bright() {
 
   return settings;
 }
+
+var bright = Bright();

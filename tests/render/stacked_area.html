@@ -36,7 +36,7 @@ body {
                          {"date":"11-Oct-21","IE":"142.74","Chrome":"22.23","Firefox":"25.19","Safari":"8.5","Opera":"1.25"},
                          {"date":"11-Oct-22","IE":"136.95","Chrome":"25.45","Firefox":"26.03","Safari":"10.06","Opera":"1.42"}];
 
-  var chart = Bright().width(640).height(250).initial_dataset(initial_dataset)
+  var chart = bright.width(640).height(250).initial_dataset(initial_dataset)
                       .chart_type('stacked-area').target('body')();
 </script>
 
@@ -53,6 +53,7 @@ var x = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([height, 0]).domain([0, 2]);
 
 var color = d3.scale.category20();
+// alert(color);
 
 var xAxis = d3.svg.axis()
     .scale(x)
