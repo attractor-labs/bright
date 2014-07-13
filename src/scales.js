@@ -5,11 +5,13 @@ function BrightScales (scales_settings) {
 
   function scales() {
     var output     = {};
+
     output.x_scale = scales.x_scale();
     output.y_scale = scales.y_scale();
 
     x_scale.domain(d3.extent(scales_settings.dataset(), function(d) { return d.date; }));
-    y_scale.domain([0, 2]);
+    y_scale.domain([0, parseInt(scales_settings.y_max+0.1*scales_settings.y_max)]);
+
 
     return output;
   }

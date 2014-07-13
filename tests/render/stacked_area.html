@@ -38,91 +38,13 @@ body {
 
   var chart = bright.width(640).height(250).initial_dataset(initial_dataset)
                       .chart_type('stacked-area').target('body').activate();
-</script>
 
-<script>
-var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+function sleep(millis, callback) { setTimeout(function() { callback(); }, millis) }
 
-var parseDate = d3.time.format("%y-%b-%d").parse,
-    formatPercent = d3.format(".0%");
+function one()   { chart.push({"date":"11-Oct-23","IE":"136.95","Chrome":"45.45","Firefox":"26.03","Safari":"10.06","Opera":"1.42"}) };
+function two()   { chart.push({"date":"11-Oct-24","IE":"156.95","Chrome":"25.45","Firefox":"36.03","Safari":"10.06","Opera":"1.42"}); };
+function three() { chart.push({"date":"11-Oct-25","IE":"186.95","Chrome":"75.45","Firefox":"46.03","Safari":"10.06","Opera":"1.42"}); };
 
-var x = d3.time.scale().range([0, width]);
-
-var y = d3.scale.linear().range([height, 0]).domain([0, 2]);
-
-var color = d3.scale.category20();
-// alert(color);
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickFormat(formatPercent);
-
-var area = d3.svg.area()
-    .x(function(d) { return x(d.date); })
-    .y0(function(d) { return y(d.y0); })
-    .y1(function(d) { return y(d.y0 + d.y); });
-
-var stack = d3.layout.stack()
-    .values(function(d) { return d.values; });
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var data = [{"date":"11-Oct-13","IE":"141.62","Chrome":"22.36","Firefox":"25.58","Safari":"9.13","Opera":"1.22"},
-            {"date":"11-Oct-14","IE":"141.95","Chrome":"22.15","Firefox":"25.78","Safari":"8.79","Opera":"1.25"},
-            {"date":"11-Oct-15","IE":"137.64","Chrome":"24.77","Firefox":"25.96","Safari":"10.16","Opera":"1.39"},
-            {"date":"11-Oct-16","IE":"37.27","Chrome":"24.65","Firefox":"25.98","Safari":"10.59","Opera":"1.44"},
-            {"date":"11-Oct-17","IE":"142.74","Chrome":"21.87","Firefox":"25.01","Safari":"9.12","Opera":"1.17"},
-            {"date":"11-Oct-18","IE":"142.14","Chrome":"22.22","Firefox":"25.26","Safari":"9.1","Opera":"1.19"},
-            {"date":"11-Oct-19","IE":"41.92","Chrome":"22.42","Firefox":"25.3","Safari":"9.07","Opera":"1.21"},
-            {"date":"11-Oct-20","IE":"142.41","Chrome":"22.08","Firefox":"25.28","Safari":"8.94","Opera":"1.18"},
-            {"date":"11-Oct-21","IE":"142.74","Chrome":"22.23","Firefox":"25.19","Safari":"8.5","Opera":"1.25"},
-            {"date":"11-Oct-22","IE":"136.95","Chrome":"25.45","Firefox":"26.03","Safari":"10.06","Opera":"1.42"}]
-
-  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-
-  data.forEach(function(d) {
-    d.date = parseDate(d.date);
-  });
-
-  var browsers = stack(color.domain().map(function(name) {
-    return {
-      name: name,
-      values: data.map(function(d) {
-        return {date: d.date, y: d[name] / 100};
-      })
-    };
-  }));
-
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-
-  var browser = svg.selectAll(".browser")
-      .data(browsers)
-    .enter().append("g")
-      .attr("class", "browser");
-
-  browser.append("path")
-      .attr("class", "area")
-      .attr("d", function(d) { return area(d.values); })
-      .style("fill", function(d) { return color(d.name); });
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
+sleep(3000, one); sleep(6000, two); sleep(9000, three);
 
 </script>

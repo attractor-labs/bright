@@ -1,19 +1,102 @@
+function BrightCropper (cropper_settings) {
+
+  function cropper() {
+    var output = {}
+    cropper_settings.canvas_object.canvas()
+                    .append("g")
+                    .append("defs")
+                    .append("clipPath")
+                    .attr("id", "clippast")
+                    .append("rect")
+                    .attr("width", cropper_settings.canvas_object.inner_width())
+                    .attr("height", cropper_settings.canvas_object.inner_height())
+
+     cropper_settings.canvas_object.chart_space()
+               .attr("clip-path", "url(#clippast)")
+
+    cropper_settings.canvas_object.canvas()
+                    .append("g")
+                    .append("defs")
+                    .append("clipPath")
+                    .attr("id", "cropxaxisright")
+                    .append("rect")
+                    .attr("transform", "translate(-5," + (cropper_settings.canvas_object.inner_height() - 2) + ")")
+                    .attr("width", cropper_settings.canvas_object.inner_width() + 5)
+                    .attr("height", 20)
+
+    return output;
+  }
+
+  return cropper();
+}
+
+function BrightListener (listener_settings) {
+
+  var initial_dataset = listener_settings.initial_dataset()
+    , day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(24*3600*1000))
+    , chart = listener_settings.chart
+    , painted_x_axis = listener_settings.painted_x_axis
+    , painted_y_axis = listener_settings.painted_y_axis
+    , area           = listener_settings.area
+    , steps = 1;
+
+  function listen () {}
+
+  listen.push = function (datapoint) {
+    initial_dataset.push(datapoint);
+
+    var reader_output = listener_settings.reader({'dataset': function (){ return initial_dataset }});
+
+    var recalculated_scales = listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
+    var recalculated_axis   = listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
+
+    var recalculated_area   = d3.svg.area().interpolate("monotone")
+                                .x(function(d) { return listener_settings.x_scale(d.date); })
+                                .y0(function(d) { return recalculated_scales.y_scale(d.y0); })
+                                .y1(function(d) { return recalculated_scales.y_scale(d.y0 + d.y); });
+
+    chart.data(reader_output.stacked_dataset()).attr("transform", "translate(" + day_distance*(steps-1) + ",0)")
+                           .attr("d", function(d) { return area(d.values); })
+                           .transition().duration(1000).attr("transform", "translate(" + day_distance*(steps) + ",0)")
+                           .attr("d", function(d) { return recalculated_area(d.values); })
+    painted_y_axis.transition().duration(1000).call(recalculated_axis.y_axis)
+
+    recalculated_axis.painted_x_axis.attr("transform", "translate(" + day_distance*(0) + "," + listener_settings.height() + ")")
+    recalculated_axis.painted_x_axis.transition().duration(1000).attr("transform", "translate(" + day_distance*(1) + "," + listener_settings.height() + ")")
+
+    area = recalculated_area;
+
+    initial_dataset.shift();
+    steps++;
+
+
+    return listen;
+  }
+
+  return listen;
+}
+
 function BrightStackedArea (chart_settings) {
 
   function chart() {
     var output = {}
 
-    var area = d3.svg.area()
+    output.area = d3.svg.area().interpolate("monotone")
                  .x(function(d) { return chart_settings.x_scale(d.date); })
                  .y0(function(d) { return chart_settings.y_scale(d.y0); })
                  .y1(function(d) { return chart_settings.y_scale(d.y0 + d.y); });
 
-    output.chart_place = chart_settings.canvas().selectAll()
-                                       .data(chart_settings.dataset()).enter().append("g");
+    output.chart_identifier = "chart-" + Math.floor(Math.random()*10000000);
 
-    output.chart = output.chart_place.append("path")
-                         .attr("class", "area").attr("d", function(d) { return area(d.values); })
-                         .style("fill", function(d) { return chart_settings.color(d.name); });
+
+    output.chart_place = chart_settings.chart_space().selectAll('.' + output.chart_identifier)
+                                       .data(chart_settings.dataset());
+
+    output.chart = output.chart_place.enter().append("path").attr("class", '' + output.chart_identifier)
+                         .attr("class", "area").attr("d", function(d) { return output.area(d.values); })
+                         .style("fill", function(d) { return chart_settings.color(d.name); })
+
+    output.chart_place.exit().remove();
 
     return output;
   }
@@ -21,22 +104,36 @@ function BrightStackedArea (chart_settings) {
   return chart();
 }
 
+
 function BrightReader (reader_settings) {
 
-  var dataset         = reader_settings.dataset()
+  var dataset         = JSON.parse(JSON.stringify(reader_settings.dataset()))
+    , y_max           = 0
     , stacked_dataset = null
     , color           = null;
 
   function reader() {
     var output = {}; reader.parse_dates();
 
-    color = d3.scale.category20()
+    color = d3.scale.category20();
     color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
+    reader.stacked_dataset();
+
+    reader.get_y_max();
 
     output.dataset         = reader.dataset;
     output.stacked_dataset = reader.stacked_dataset;
     output.color           = reader.color();
+    output.y_max           = y_max;
     return output;
+  }
+
+  reader.get_y_max = function () {
+    var keys = d3.keys(dataset[0]).filter(function(key) { return key !== "date"; });
+    dataset.forEach(function (datapoint){
+      var current_sum = keys.map(function(attribute) { return(datapoint[attribute]/1) }).reduce(function(a, b) { return a + b })
+      if (y_max < current_sum) { y_max = current_sum }
+    });
   }
 
   reader.dataset = function () {
@@ -51,7 +148,7 @@ function BrightReader (reader_settings) {
     if (stacked_dataset) { return stacked_dataset } else {
       var stack = d3.layout.stack().values(function(d) { return d.values; })
       stacked_dataset = stack(color.domain().map(function(name) {
-        return { name: name, values: dataset.map(function(d) { return { date: d.date, y: d[name] / 100 } }) };
+        return { name: name, values: dataset.map(function(d) { return { date: d.date, y: d[name]/1 } }) };
       }));
       return stacked_dataset;
     }
@@ -72,8 +169,8 @@ function BrightReader (reader_settings) {
 
 function BrightAxis (axis_settings) {
 
-  var x_axis_place = axis_settings.canvas().append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
-    , y_axis_place = axis_settings.canvas().append("g").attr("class", "x axis")
+  var x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright)").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
+    , y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright)").append("g").attr("class", "x axis")
     , x_axis       = null
     , y_axis       = null;
 
@@ -83,8 +180,17 @@ function BrightAxis (axis_settings) {
     output.x_axis = axis.x_axis();
     output.y_axis = axis.y_axis();
 
-    x_axis_place.call(output.x_axis);
-    y_axis_place.call(output.y_axis);
+    output.x_axis_place = x_axis_place;
+    output.y_axis_place = y_axis_place;
+
+
+    var paint_x_target    = axis_settings.painted_x || x_axis_place;
+    var paint_y_target    = axis_settings.painted_y || y_axis_place;
+    output.painted_x_axis = paint_x_target.call(output.x_axis);
+
+    if (!axis_settings.skip) {
+      output.painted_y_axis = paint_y_target.call(output.y_axis);
+    }
 
     return output;
   }
@@ -113,11 +219,13 @@ function BrightScales (scales_settings) {
 
   function scales() {
     var output     = {};
+
     output.x_scale = scales.x_scale();
     output.y_scale = scales.y_scale();
 
     x_scale.domain(d3.extent(scales_settings.dataset(), function(d) { return d.date; }));
-    y_scale.domain([0, 2]);
+    y_scale.domain([0, parseInt(scales_settings.y_max+0.1*scales_settings.y_max)]);
+
 
     return output;
   }
@@ -140,15 +248,15 @@ function BrightScales (scales_settings) {
 }
 
 function BrightBuilder (chart_elements) {
-  var canvas_object  = null
-    , scales_object  = null
-    , axis_object    = null
-    , dataset_object = null
-    , chart_object   = null;
+  var canvas_object   = null
+    , scales_object   = null
+    , axis_object     = null
+    , dataset_object  = null
+    , chart_object    = null;
 
   function builder () {
-    builder.draw_canvas().read_initial_dataset()
-           .prepare_scales().build_axis().build_chart();
+    return builder.draw_canvas().read_initial_dataset()
+                  .prepare_scales().build_axis().build_chart().crop_edges().listen();
   }
 
   builder.read_initial_dataset = function () {
@@ -172,6 +280,7 @@ function BrightBuilder (chart_elements) {
   builder.prepare_scales = function () {
     var scales_settings     = {};
     scales_settings.dataset = dataset_object.dataset;
+    scales_settings.y_max   = dataset_object.y_max;
     scales_settings.width   = canvas_object.inner_width;
     scales_settings.height  = canvas_object.inner_height;
     scales_object           = chart_elements.scales(scales_settings);
@@ -180,30 +289,62 @@ function BrightBuilder (chart_elements) {
   }
 
   builder.build_axis = function () {
-    var axis_settings       = {};
-    axis_settings.canvas    = canvas_object.canvas;
-    axis_settings.x_scale   = scales_object.x_scale;
-    axis_settings.y_scale   = scales_object.y_scale;
-    axis_settings.height    = canvas_object.inner_height;
-    axis_object             = chart_elements.axis(axis_settings);
+    var axis_settings        = {};
+    axis_settings.canvas     = canvas_object.canvas;
+    axis_settings.x_scale    = scales_object.x_scale;
+    axis_settings.y_scale    = scales_object.y_scale;
+    axis_settings.height     = canvas_object.inner_height;
+    axis_object              = chart_elements.axis(axis_settings);
 
     return builder;
   }
 
   builder.build_chart = function () {
-    var chart_settings       = {};
-    chart_settings.canvas    = canvas_object.canvas;
-    chart_settings.dataset   = dataset_object.stacked_dataset;
-    chart_settings.color     = dataset_object.color;
-    chart_settings.x_scale   = scales_object.x_scale;
-    chart_settings.y_scale   = scales_object.y_scale;
-    chart_object             = chart_elements.chart(chart_settings);
+    var chart_settings         = {};
+    chart_settings.chart_space = canvas_object.chart_space;
+    chart_settings.dataset     = dataset_object.stacked_dataset;
+    chart_settings.color       = dataset_object.color;
+    chart_settings.x_scale     = scales_object.x_scale;
+    chart_settings.y_scale     = scales_object.y_scale;
+    chart_object               = chart_elements.chart(chart_settings);
 
     return builder;
   }
 
+  builder.crop_edges = function () {
+    var crop_settings = {}
+    crop_settings.canvas_object = canvas_object;
+    crop_settings.axis_object   = axis_object;
+    crop_object                 = chart_elements.cropper(crop_settings);
+    return builder;
+  }
+
+  builder.listen = function () {
+    var listener_settings = {};
+    listener_settings.canvas           = canvas_object.canvas;
+    listener_settings.chart            = chart_object.chart;
+    listener_settings.chart_identifier = chart_object.chart_identifier;
+    listener_settings.chart_place      = chart_object.chart_place;
+    listener_settings.area             = chart_object.area;
+    listener_settings.reader           = chart_elements.reader;
+    listener_settings.x_scale          = scales_object.x_scale;
+    listener_settings.y_scale          = scales_object.y_scale;
+
+    listener_settings.width            = canvas_object.inner_width;
+    listener_settings.height           = canvas_object.inner_height;
+    listener_settings.scales           = chart_elements.scales;
+    listener_settings.painted_x_axis   = axis_object.painted_x_axis;
+    listener_settings.painted_y_axis   = axis_object.painted_y_axis;
+    listener_settings.axis             = chart_elements.axis;
+
+
+    listener_settings.initial_dataset  = chart_elements.settings.initial_dataset;
+
+    return chart_elements.listener(listener_settings);
+  }
+
   builder.build = function () {
-    return builder()
+    return builder();
   }
 
   return builder;
@@ -212,19 +353,26 @@ function BrightBuilder (chart_elements) {
 function BrightCanvas (canvas_settings) {
 
   var margin         = { top: 20, right: 20, bottom: 30, left: 50 }
+
     , canvas_element = d3.select(canvas_settings.target())
                          .append("svg").attr('style', 'background-color: lightblue')
                          .attr("width", canvas_settings.width())
                          .attr("height", canvas_settings.height())
-                         .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                         .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    , chart_space    = canvas_element.append("g");
 
   function canvas() {
     var output          = {};
     output.canvas       = canvas.canvas;
+    output.chart_space  = canvas.chart_space;
     output.inner_width  = canvas.inner_width;
     output.inner_height = canvas.inner_height;
 
     return output;
+  }
+
+  canvas.chart_space  = function () {
+    return chart_space;
   }
 
   canvas.canvas  = function () {
@@ -258,11 +406,13 @@ function Bright() {
     chart_elements.axis           = BrightAxis
     chart_elements.chart          = BrightStackedArea
     chart_elements.reader         = BrightReader
-    BrightBuilder(chart_elements).build()
+    chart_elements.cropper        = BrightCropper
+    chart_elements.listener       = BrightListener
+    return BrightBuilder(chart_elements).build()
   }
 
   settings.activate = function() {
-    settings()
+    return settings()
   }
 
   settings.chart_type = function(type) {

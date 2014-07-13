@@ -13,6 +13,8 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/cropper.js",
+  "src/listener.js",
   "src/stacked_area.js",
   "src/reader.js",
   "src/axis.js",

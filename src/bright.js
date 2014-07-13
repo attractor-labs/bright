@@ -14,11 +14,13 @@ function Bright() {
     chart_elements.axis           = BrightAxis
     chart_elements.chart          = BrightStackedArea
     chart_elements.reader         = BrightReader
-    BrightBuilder(chart_elements).build()
+    chart_elements.cropper        = BrightCropper
+    chart_elements.listener       = BrightListener
+    return BrightBuilder(chart_elements).build()
   }
 
   settings.activate = function() {
-    settings()
+    return settings()
   }
 
   settings.chart_type = function(type) {
