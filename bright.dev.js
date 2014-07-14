@@ -2,12 +2,12 @@ function BrightLegend (legend_settings) {
 
   var day_distance = legend_settings.x_scale(new Date(0)) - legend_settings.x_scale(new Date(24*3600*1000));
 
-  var tooltip_item_place = legend_settings.canvas().append("g").attr("class", "legend")
+  var legend_item_place = legend_settings.canvas().append("g").attr("class", "legend")
 
-  var tooltip_item = tooltip_item_place.selectAll("rect.tooltipitem").data(legend_settings.color.domain());
+  var legend_item = legend_item_place.selectAll("rect.legenditem").data(legend_settings.color.domain());
 
-  var tooltip_item_enter = tooltip_item.enter().append("rect")
-                          .attr("class", "tooltipitem")
+  var legend_item_enter = legend_item.enter().append("rect")
+                          .attr("class", "legenditem")
                           .attr("width", 15)
                           .attr("height", 15)
                           .attr("transform", function (d, i) {
@@ -21,8 +21,8 @@ function BrightLegend (legend_settings) {
                           })
                           .attr("fill", function (d, i) { return legend_settings.color(d) });
 
-  var tooltip_item_enter = tooltip_item.enter().append("text")
-                          .attr("class", "tooltipitemtext")
+  var legend_item_enter = legend_item.enter().append("text")
+                          .attr("class", "legenditemtext")
                           .attr("dx", 18).attr("dy", 12)
                           .attr("style", "font-size: 12px")
                           .attr("transform", function (d, i) {
@@ -35,7 +35,7 @@ function BrightLegend (legend_settings) {
                             }
                           })
 
-  tooltip_item_enter.text(function (dat, i) { return dat })
+  legend_item_enter.text(function (dat, i) { return dat })
 
   function legend () {}
 
