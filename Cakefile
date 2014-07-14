@@ -13,6 +13,7 @@ css_dependencies = [
 ]
 
 js_dependencies = [
+  "src/legend.js",
   "src/tooltips.js",
   "src/cropper.js",
   "src/listener.js",

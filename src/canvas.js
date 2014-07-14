@@ -1,6 +1,6 @@
 function BrightCanvas (canvas_settings) {
 
-  var margin         = { top: 20, right: 20, bottom: 30, left: 50 }
+  var margin         = { top: 20, right: 20, bottom: 65, left: 50 }
 
     , canvas_element = d3.select(canvas_settings.target())
                          .append("svg").attr('style', 'background-color: transparent')

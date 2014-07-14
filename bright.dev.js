@@ -1,3 +1,43 @@
+function BrightLegend (legend_settings) {
+
+  var day_distance = legend_settings.x_scale(new Date(0)) - legend_settings.x_scale(new Date(24*3600*1000));
+
+  var tooltip_item_place = legend_settings.canvas().append("g")
+
+  var tooltip_item = tooltip_item_place.selectAll("rect.tooltipitem").data(legend_settings.color.domain());
+
+  var tooltip_item_enter = tooltip_item.enter().append("rect")
+                          .attr("class", "tooltipitem")
+                          .attr("width", 15)
+                          .attr("height", 15)
+                          .attr("transform", function (d, i) {
+                            if (i <= 2) {
+                              return "translate( " + 180*i + ", " + (legend_settings.inner_height()+30) + ")";
+                            } else {
+                              return "translate( " + 180*(i - 3) + ", " + (legend_settings.inner_height()+50) + ")";
+                            }
+                          })
+                          .attr("fill", function (d, i) { return legend_settings.color(d) });
+
+  var tooltip_item_enter = tooltip_item.enter().append("text")
+                          .attr("class", "tooltipitemtext")
+                          .attr("dx", 18).attr("dy", 12)
+                          .attr("style", "font-size: 12px")
+                          .attr("transform", function (d, i) {
+                            if (i <= 2) {
+                              return "translate( " + 180*i + ", " + (legend_settings.inner_height()+30) + ")";
+                            } else {
+                              return "translate( " + 180*(i - 3) + ", " + (legend_settings.inner_height()+50) + ")";
+                            }
+                          })
+
+  tooltip_item_enter.text(function (dat, i) { return dat })
+
+  function legend () {}
+
+  return legend();
+}
+
 function BrightTooltips (tooltips_settings) {
 
   var day_distance = tooltips_settings.x_scale(new Date(0)) - tooltips_settings.x_scale(new Date(24*3600*1000));
@@ -18,7 +58,7 @@ function BrightTooltips (tooltips_settings) {
 
   var legend_place = focus.append("rect")
       .attr("class", "tpbox")
-      .attr("width", "100")
+      .attr("width", "200")
       .attr("height", tooltips_settings.color.domain().length*21)
       .attr("style", "fill: white; opacity: 0.7")
 
@@ -58,7 +98,6 @@ function BrightTooltips (tooltips_settings) {
   function mousemove() {
     var x0 = tooltips_settings.x_scale.invert(d3.mouse(this)[0])
       , i  = bisect_date(tooltips_settings.dataset(), x0, 1)
-      // , i  = x0 - tooltips_settings.dataset()[i-1].date > tooltips_settings.dataset()[i] - x0 ? i : i - 1
       , d  = tooltips_settings.dataset()[i]
       , d_used  = tooltips_settings.shift ? tooltips_settings.dataset()[i+tooltips_settings.shift] : d;
 
@@ -66,13 +105,13 @@ function BrightTooltips (tooltips_settings) {
 
     tooltip_item_enter.text(function (dat, i) { return "" + dat + " " + parseInt(d_used[dat]); })
 
-    if (tooltips_settings.inner_width() - tooltips_settings.x_scale(d.date) > 100) {
+    if (tooltips_settings.inner_width() - tooltips_settings.x_scale(d.date) > 200) {
       focus.select("rect.tpbox").attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
       tooltip_item_place.attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) + 5) + ", 20)")
     } else {
       focus.select("rect.tpbox").attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
-      focus.select("rect.tpbox").attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) - 100) + ", 15)");
-      tooltip_item_place.attr("transform", "translate(" + ((tooltips_settings.x_scale(d.date) - 100) + 5) + ", 20)");
+      focus.select("rect.tpbox").attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) - 200) + ", 15)");
+      tooltip_item_place.attr("transform", "translate(" + ((tooltips_settings.x_scale(d.date) - 200) + 5) + ", 20)");
     }
     focus.select("text.y0").transition().duration(50).attr("transform", "translate( 10, 20)").text(d_used.date);
 
@@ -115,7 +154,7 @@ function BrightCropper (cropper_settings) {
   return cropper();
 }
 
-function BrightListener (listener_settings) {
+ function BrightListener (listener_settings) {
 
   var initial_dataset = listener_settings.initial_dataset()
     , day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(24*3600*1000))
@@ -169,6 +208,25 @@ function BrightListener (listener_settings) {
 
     return listen;
   }
+
+  // listen.enrich_initial_dataset = function (datapoint) {
+  //   var id_length = initial_dataset.length - 1;
+  //   var i = 0;
+  //   d3.keys(datapoint).forEach(function (key) {
+  //     while (i < id_length) {
+  //       // if (!initial_dataset[i][key]) { initial_dataset[i][key] = '0' };
+  //       initial_dataset[i]
+  //       console.log(initial_dataset[i])
+  //       i++;
+  //     }
+  //     // initial_dataset = initial_dataset.map(function (previous_datapoint) {
+  //     //   var upda
+  //     //   if (!previous_datapoint[key]) { previous_datapoint[key] = '0' };
+  //     //   return previous_datapoint
+  //     // });
+  //     // console.log(JSON.stringify(initial_dataset))
+  //   });
+  // }
 
   return listen;
 }
@@ -354,7 +412,7 @@ function BrightBuilder (chart_elements) {
   function builder () {
     return builder.draw_canvas().read_initial_dataset()
                   .prepare_scales().build_axis().build_chart()
-                  .crop_edges().prepare_tooltips().listen();
+                  .crop_edges().prepare_tooltips().prepare_legend().listen();
   }
 
   builder.read_initial_dataset = function () {
@@ -429,6 +487,18 @@ function BrightBuilder (chart_elements) {
     return builder;
   }
 
+  builder.prepare_legend = function () {
+    var legend_settings = {}
+    legend_settings.x_scale      = scales_object.x_scale;
+    legend_settings.canvas       = canvas_object.canvas;
+    legend_settings.inner_height = canvas_object.inner_height;
+    legend_settings.inner_width  = canvas_object.inner_width;
+    legend_settings.color        = dataset_object.color;
+    legend_settings.dataset      = dataset_object.dataset;
+    legend_object                = chart_elements.legend(legend_settings);
+    return builder;
+  }
+
   builder.listen = function () {
     var listener_settings = {};
     listener_settings.tooltips         = chart_elements.tooltips
@@ -464,7 +534,7 @@ function BrightBuilder (chart_elements) {
 
 function BrightCanvas (canvas_settings) {
 
-  var margin         = { top: 20, right: 20, bottom: 30, left: 50 }
+  var margin         = { top: 20, right: 20, bottom: 65, left: 50 }
 
     , canvas_element = d3.select(canvas_settings.target())
                          .append("svg").attr('style', 'background-color: transparent')
@@ -520,6 +590,7 @@ function Bright() {
     chart_elements.reader         = BrightReader
     chart_elements.cropper        = BrightCropper
     chart_elements.tooltips       = BrightTooltips
+    chart_elements.legend         = BrightLegend
     chart_elements.listener       = BrightListener
     return BrightBuilder(chart_elements).build()
   }

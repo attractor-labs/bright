@@ -1,4 +1,4 @@
-function BrightListener (listener_settings) {
+ function BrightListener (listener_settings) {
 
   var initial_dataset = listener_settings.initial_dataset()
     , day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(24*3600*1000))
@@ -52,6 +52,25 @@ function BrightListener (listener_settings) {
 
     return listen;
   }
+
+  // listen.enrich_initial_dataset = function (datapoint) {
+  //   var id_length = initial_dataset.length - 1;
+  //   var i = 0;
+  //   d3.keys(datapoint).forEach(function (key) {
+  //     while (i < id_length) {
+  //       // if (!initial_dataset[i][key]) { initial_dataset[i][key] = '0' };
+  //       initial_dataset[i]
+  //       console.log(initial_dataset[i])
+  //       i++;
+  //     }
+  //     // initial_dataset = initial_dataset.map(function (previous_datapoint) {
+  //     //   var upda
+  //     //   if (!previous_datapoint[key]) { previous_datapoint[key] = '0' };
+  //     //   return previous_datapoint
+  //     // });
+  //     // console.log(JSON.stringify(initial_dataset))
+  //   });
+  // }
 
   return listen;
 }

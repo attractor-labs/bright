@@ -18,7 +18,7 @@ function BrightTooltips (tooltips_settings) {
 
   var legend_place = focus.append("rect")
       .attr("class", "tpbox")
-      .attr("width", "100")
+      .attr("width", "200")
       .attr("height", tooltips_settings.color.domain().length*21)
       .attr("style", "fill: white; opacity: 0.7")
 
@@ -65,13 +65,13 @@ function BrightTooltips (tooltips_settings) {
 
     tooltip_item_enter.text(function (dat, i) { return "" + dat + " " + parseInt(d_used[dat]); })
 
-    if (tooltips_settings.inner_width() - tooltips_settings.x_scale(d.date) > 100) {
+    if (tooltips_settings.inner_width() - tooltips_settings.x_scale(d.date) > 200) {
       focus.select("rect.tpbox").attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
       tooltip_item_place.attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) + 5) + ", 20)")
     } else {
       focus.select("rect.tpbox").attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
-      focus.select("rect.tpbox").attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) - 100) + ", 15)");
-      tooltip_item_place.attr("transform", "translate(" + ((tooltips_settings.x_scale(d.date) - 100) + 5) + ", 20)");
+      focus.select("rect.tpbox").attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) - 200) + ", 15)");
+      tooltip_item_place.attr("transform", "translate(" + ((tooltips_settings.x_scale(d.date) - 200) + 5) + ", 20)");
     }
     focus.select("text.y0").transition().duration(50).attr("transform", "translate( 10, 20)").text(d_used.date);
 

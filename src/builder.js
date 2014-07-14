@@ -8,7 +8,7 @@ function BrightBuilder (chart_elements) {
   function builder () {
     return builder.draw_canvas().read_initial_dataset()
                   .prepare_scales().build_axis().build_chart()
-                  .crop_edges().prepare_tooltips().listen();
+                  .crop_edges().prepare_tooltips().prepare_legend().listen();
   }
 
   builder.read_initial_dataset = function () {
@@ -80,6 +80,18 @@ function BrightBuilder (chart_elements) {
     tooltips_settings.color        = dataset_object.color;
     tooltips_settings.dataset      = dataset_object.dataset;
     tooltips_object                = chart_elements.tooltips(tooltips_settings);
+    return builder;
+  }
+
+  builder.prepare_legend = function () {
+    var legend_settings = {}
+    legend_settings.x_scale      = scales_object.x_scale;
+    legend_settings.canvas       = canvas_object.canvas;
+    legend_settings.inner_height = canvas_object.inner_height;
+    legend_settings.inner_width  = canvas_object.inner_width;
+    legend_settings.color        = dataset_object.color;
+    legend_settings.dataset      = dataset_object.dataset;
+    legend_object                = chart_elements.legend(legend_settings);
     return builder;
   }
 
