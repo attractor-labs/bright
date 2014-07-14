@@ -25,7 +25,7 @@ body {
 <body>
 
 <script>
-  var initial_dataset = [{"date":"11-Oct-13","facebook.com/john":"141.62","techcrunch.com/new-artic...":"22.36","google.com/s=somet...":"25.58","twitter.com/obam...":"9.13","direct":"1.22"},
+  var initial_dataset = [{"date":"11-Oct-13","bloomberg.com/goo...": "31","facebook.com/john":"141.62","techcrunch.com/new-artic...":"22.36","google.com/s=somet...":"25.58","twitter.com/obam...":"9.13","direct":"1.22"},
                          {"date":"11-Oct-14","facebook.com/john":"141.95","techcrunch.com/new-artic...":"22.15","google.com/s=somet...":"25.78","twitter.com/obam...":"8.79","direct":"1.25"},
                          {"date":"11-Oct-15","facebook.com/john":"137.64","techcrunch.com/new-artic...":"24.77","google.com/s=somet...":"25.96","twitter.com/obam...":"10.16","direct":"1.39"},
                          {"date":"11-Oct-16","facebook.com/john":"37.27","techcrunch.com/new-artic...":"24.65","google.com/s=somet...":"25.98","twitter.com/obam...":"10.59","direct":"1.44"},
@@ -41,10 +41,12 @@ body {
 
 function sleep(millis, callback) { setTimeout(function() { callback(); }, millis) }
 
-function one()   { chart.push({"date":"11-Oct-23", "facebook.com/john":"136.95","techcrunch.com/new-artic...":"45.45","google.com/s=somet...":"26.03","twitter.com/obam...":"10.06","direct":"1.42"}) };
+// function one()   { chart.push({"date":"11-Oct-23", "facebook.com/john":"136.95","techcrunch.com/new-artic...":"45.45","google.com/s=somet...":"26.03","twitter.com/obam...":"10.06","direct":"1.42"}) };
+function one()   { chart.push({"date":"11-Oct-23", "ycombinator.com/p=12...": "15","facebook.com/john":"136.95","techcrunch.com/new-artic...":"45.45","google.com/s=somet...":"26.03","twitter.com/obam...":"10.06","direct":"1.42"}) };
 function two()   { chart.push({"date":"11-Oct-24","facebook.com/john":"156.95","techcrunch.com/new-artic...":"25.45","google.com/s=somet...":"36.03","twitter.com/obam...":"10.06","direct":"1.42"}); };
-function three() { chart.push({"date":"11-Oct-25", "facebook.com/john":"186.95","techcrunch.com/new-artic...":"75.45","google.com/s=somet...":"46.03","twitter.com/obam...":"10.06","direct":"1.42"}); };
+function three() { chart.push({"date":"11-Oct-25", "techcrunch.com/new-artic...":"75.45","google.com/s=somet...":"46.03","twitter.com/obam...":"10.06","direct":"1.42"}); };
+function four() { chart.push({"date":"11-Oct-26", "awesome.inc/ho...": "97", "dailydeal.org/fds...": "67","techcrunch.com/new-artic...":"75.45","google.com/s=somet...":"46.03","twitter.com/obam...":"10.06","direct":"1.42"}); };
 
-sleep(3000, one); // sleep(6000, two); sleep(9000, three);
+sleep(3000, one); sleep(6000, two); sleep(9000, three); sleep(12000, four);
 
 </script>

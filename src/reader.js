@@ -6,7 +6,7 @@ function BrightReader (reader_settings) {
     , color           = null;
 
   function reader() {
-    var output = {}; reader.parse_dates();
+    var output = {}; reader.parse_dates(); reader.enrich_dataset();
 
     color = d3.scale.category20();
     color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
@@ -56,6 +56,35 @@ function BrightReader (reader_settings) {
       datapoint.date = reader.parse_date(datapoint.date);
     });
   }
+
+  reader.enrich_dataset = function () {
+    var id_length = dataset.length;
+
+    d3.keys(dataset[0]).forEach(function (key) {
+      var i = 0;
+      while (i < id_length) {
+        if (!dataset[i][key]) { dataset[i][key] = '0' };
+        i++;
+      }
+      // console.log(JSON.stringify(dataset))
+    });
+
+    d3.keys(dataset[0]).forEach(function (key) {
+      var i = 0;
+      var all_zero = true;
+      while (i < id_length) {
+        if (dataset[i][key] != '0') { all_zero = false };
+        i++;
+        if (i == id_length && all_zero == true) {
+          dataset.forEach(function (element) {
+            delete element[key];
+          });
+        }
+      }
+
+    });
+  }
+
 
   return reader();
 }

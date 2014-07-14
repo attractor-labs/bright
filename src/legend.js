@@ -2,7 +2,7 @@ function BrightLegend (legend_settings) {
 
   var day_distance = legend_settings.x_scale(new Date(0)) - legend_settings.x_scale(new Date(24*3600*1000));
 
-  var tooltip_item_place = legend_settings.canvas().append("g")
+  var tooltip_item_place = legend_settings.canvas().append("g").attr("class", "legend")
 
   var tooltip_item = tooltip_item_place.selectAll("rect.tooltipitem").data(legend_settings.color.domain());
 
@@ -13,8 +13,10 @@ function BrightLegend (legend_settings) {
                           .attr("transform", function (d, i) {
                             if (i <= 2) {
                               return "translate( " + 180*i + ", " + (legend_settings.inner_height()+30) + ")";
-                            } else {
+                            } else if (i <= 5) {
                               return "translate( " + 180*(i - 3) + ", " + (legend_settings.inner_height()+50) + ")";
+                            } else {
+                              return "translate( " + 180*(i - 6) + ", " + (legend_settings.inner_height()+70) + ")";
                             }
                           })
                           .attr("fill", function (d, i) { return legend_settings.color(d) });
@@ -26,8 +28,10 @@ function BrightLegend (legend_settings) {
                           .attr("transform", function (d, i) {
                             if (i <= 2) {
                               return "translate( " + 180*i + ", " + (legend_settings.inner_height()+30) + ")";
-                            } else {
+                            } else if (i <= 5) {
                               return "translate( " + 180*(i - 3) + ", " + (legend_settings.inner_height()+50) + ")";
+                            } else {
+                              return "translate( " + 180*(i - 6) + ", " + (legend_settings.inner_height()+70) + ")";
                             }
                           })
 

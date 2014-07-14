@@ -8,7 +8,7 @@ function BrightBuilder (chart_elements) {
   function builder () {
     return builder.draw_canvas().read_initial_dataset()
                   .prepare_scales().build_axis().build_chart()
-                  .crop_edges().prepare_tooltips().prepare_legend().listen();
+                  .crop_edges().prepare_legend().prepare_tooltips().listen();
   }
 
   builder.read_initial_dataset = function () {
@@ -75,6 +75,7 @@ function BrightBuilder (chart_elements) {
     var tooltips_settings = {}
     tooltips_settings.x_scale      = scales_object.x_scale;
     tooltips_settings.canvas       = canvas_object.canvas;
+    tooltips_settings.chart_space  = canvas_object.chart_space;
     tooltips_settings.inner_height = canvas_object.inner_height;
     tooltips_settings.inner_width  = canvas_object.inner_width;
     tooltips_settings.color        = dataset_object.color;
@@ -98,11 +99,13 @@ function BrightBuilder (chart_elements) {
   builder.listen = function () {
     var listener_settings = {};
     listener_settings.tooltips         = chart_elements.tooltips
+    listener_settings.legend           = chart_elements.legend
 
     listener_settings.canvas           = canvas_object.canvas;
     listener_settings.chart            = chart_object.chart;
     listener_settings.chart_identifier = chart_object.chart_identifier;
     listener_settings.chart_place      = chart_object.chart_place;
+    listener_settings.chart_space      = canvas_object.chart_space;
     listener_settings.area             = chart_object.area;
     listener_settings.reader           = chart_elements.reader;
     listener_settings.x_scale          = scales_object.x_scale;
