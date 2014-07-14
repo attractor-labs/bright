@@ -27,10 +27,22 @@ function BrightListener (listener_settings) {
                            .attr("d", function(d) { return area(d.values); })
                            .transition().duration(1000).attr("transform", "translate(" + day_distance*(steps) + ",0)")
                            .attr("d", function(d) { return recalculated_area(d.values); })
+
     painted_y_axis.transition().duration(1000).call(recalculated_axis.y_axis)
 
     recalculated_axis.painted_x_axis.attr("transform", "translate(" + day_distance*(0) + "," + listener_settings.height() + ")")
     recalculated_axis.painted_x_axis.transition().duration(1000).attr("transform", "translate(" + day_distance*(1) + "," + listener_settings.height() + ")")
+
+    tooltips_settings = {}
+    tooltips_settings.x_scale      = recalculated_scales.x_scale;
+    tooltips_settings.canvas       = listener_settings.canvas;
+    tooltips_settings.inner_height = listener_settings.height;
+    tooltips_settings.inner_width  = listener_settings.width;
+    tooltips_settings.color        = reader_output.color;
+    tooltips_settings.dataset      = reader_output.dataset;
+    tooltips_settings.shift        = 1;
+    listener_settings.tooltips(tooltips_settings)
+
 
     area = recalculated_area;
 

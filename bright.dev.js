@@ -1,3 +1,92 @@
+function BrightTooltips (tooltips_settings) {
+
+  var day_distance = tooltips_settings.x_scale(new Date(0)) - tooltips_settings.x_scale(new Date(24*3600*1000));
+
+  var focus = tooltips_settings.canvas().append("g")
+                               .attr("class", "focus")
+                               .style("display", "none");
+
+  focus.append("rect")
+      .attr("class", "y0")
+      .attr("width", 0.75)
+      .attr("height", tooltips_settings.inner_height()-15);
+
+  focus.append("text")
+      .attr("class", "y0")
+      .attr("style", "font-size: 12px")
+      .attr("dy", "-1em");
+
+  var legend_place = focus.append("rect")
+      .attr("class", "tpbox")
+      .attr("width", "100")
+      .attr("height", tooltips_settings.color.domain().length*21)
+      .attr("style", "fill: white; opacity: 0.7")
+
+  focus.append("text")
+       .attr("class", "tpcontent")
+       .attr("style", "font-size: 12px")
+       .attr("dy", "20")
+       .attr("dx", "20");
+
+  var legend_item_place = focus.append("g")
+
+  var legend_item = legend_item_place.selectAll("rect.legenditem").data(tooltips_settings.color.domain());
+
+  var legend_item_enter = legend_item.enter().append("rect")
+                          .attr("class", "legenditem")
+                          .attr("width", 15)
+                          .attr("height", 15)
+                          .attr("transform", function (d, i) { return "translate( 0, " + 20*i + ")"; })
+                          .attr("fill", function (d, i) { return tooltips_settings.color(d) });
+
+  var legend_item_enter = legend_item.enter().append("text")
+                          .attr("class", "legenditemtext")
+                          .attr("dx", 18).attr("dy", 12)
+                          .attr("style", "font-size: 12px")
+                          .attr("transform", function (d, i) { return "translate( 0, " + 20*i + ")"; })
+
+  var overlay = tooltips_settings.canvas()
+                .append("rect").attr("style", "fill: transparent")
+                .attr("width", tooltips_settings.inner_width())
+                .attr("height", tooltips_settings.inner_height())
+                .on("mouseover", function() { focus.style("display", null); })
+                .on("mouseout", function() { focus.style("display", "none"); })
+                .on("mousemove", mousemove);
+
+  var bisect_date = d3.bisector(function(d) { return d.date; }).left;
+
+  function mousemove() {
+    var x0 = tooltips_settings.x_scale.invert(d3.mouse(this)[0])
+      , i  = bisect_date(tooltips_settings.dataset(), x0, 1)
+      // , d0 = tooltips_settings.dataset()[i-1]
+      // , d1 = tooltips_settings.dataset()[i]
+      , i = x0 - tooltips_settings.dataset()[i-1].date > tooltips_settings.dataset()[i] - x0 ? i : i - 1
+      , d = tooltips_settings.dataset()[i]
+      , d_used  = tooltips_settings.shift ? tooltips_settings.dataset()[i+tooltips_settings.shift] : d;
+
+    focus.select("rect.y0").transition().duration(50).attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
+
+    legend_item_enter.text(function (dat, i) { return "" + dat + " " + parseInt(d_used[dat]); })
+
+    if (tooltips_settings.inner_width() - tooltips_settings.x_scale(d.date) > 100) {
+      focus.select("rect.tpbox").attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
+      legend_item_place.attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) + 5) + ", 20)")
+    } else {
+      focus.select("rect.tpbox").attr("transform", "translate(" + tooltips_settings.x_scale(d.date) + ", 15)");
+      focus.select("rect.tpbox").attr("transform", "translate(" + (tooltips_settings.x_scale(d.date) - 100) + ", 15)");
+      legend_item_place.attr("transform", "translate(" + ((tooltips_settings.x_scale(d.date) - 100) + 5) + ", 20)");
+    }
+    focus.select("text.y0").transition().duration(50).attr("transform", "translate( 10, 20)").text(d_used.date);
+
+  }
+
+  function tooltips () {
+    console.log("Hi! Tooltips here.");
+  }
+
+  return tooltips();
+}
+
 function BrightCropper (cropper_settings) {
 
   function cropper() {
@@ -59,10 +148,22 @@ function BrightListener (listener_settings) {
                            .attr("d", function(d) { return area(d.values); })
                            .transition().duration(1000).attr("transform", "translate(" + day_distance*(steps) + ",0)")
                            .attr("d", function(d) { return recalculated_area(d.values); })
+
     painted_y_axis.transition().duration(1000).call(recalculated_axis.y_axis)
 
     recalculated_axis.painted_x_axis.attr("transform", "translate(" + day_distance*(0) + "," + listener_settings.height() + ")")
     recalculated_axis.painted_x_axis.transition().duration(1000).attr("transform", "translate(" + day_distance*(1) + "," + listener_settings.height() + ")")
+
+    tooltips_settings = {}
+    tooltips_settings.x_scale      = recalculated_scales.x_scale;
+    tooltips_settings.canvas       = listener_settings.canvas;
+    tooltips_settings.inner_height = listener_settings.height;
+    tooltips_settings.inner_width  = listener_settings.width;
+    tooltips_settings.color        = reader_output.color;
+    tooltips_settings.dataset      = reader_output.dataset;
+    tooltips_settings.shift        = 1;
+    listener_settings.tooltips(tooltips_settings)
+
 
     area = recalculated_area;
 
@@ -256,7 +357,8 @@ function BrightBuilder (chart_elements) {
 
   function builder () {
     return builder.draw_canvas().read_initial_dataset()
-                  .prepare_scales().build_axis().build_chart().crop_edges().listen();
+                  .prepare_scales().build_axis().build_chart()
+                  .crop_edges().prepare_tooltips().listen();
   }
 
   builder.read_initial_dataset = function () {
@@ -319,8 +421,22 @@ function BrightBuilder (chart_elements) {
     return builder;
   }
 
+  builder.prepare_tooltips = function () {
+    var tooltips_settings = {}
+    tooltips_settings.x_scale      = scales_object.x_scale;
+    tooltips_settings.canvas       = canvas_object.canvas;
+    tooltips_settings.inner_height = canvas_object.inner_height;
+    tooltips_settings.inner_width  = canvas_object.inner_width;
+    tooltips_settings.color        = dataset_object.color;
+    tooltips_settings.dataset      = dataset_object.dataset;
+    tooltips_object                = chart_elements.tooltips(tooltips_settings);
+    return builder;
+  }
+
   builder.listen = function () {
     var listener_settings = {};
+    listener_settings.tooltips         = chart_elements.tooltips
+
     listener_settings.canvas           = canvas_object.canvas;
     listener_settings.chart            = chart_object.chart;
     listener_settings.chart_identifier = chart_object.chart_identifier;
@@ -355,7 +471,7 @@ function BrightCanvas (canvas_settings) {
   var margin         = { top: 20, right: 20, bottom: 30, left: 50 }
 
     , canvas_element = d3.select(canvas_settings.target())
-                         .append("svg").attr('style', 'background-color: lightblue')
+                         .append("svg").attr('style', 'background-color: transparent')
                          .attr("width", canvas_settings.width())
                          .attr("height", canvas_settings.height())
                          .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -407,6 +523,7 @@ function Bright() {
     chart_elements.chart          = BrightStackedArea
     chart_elements.reader         = BrightReader
     chart_elements.cropper        = BrightCropper
+    chart_elements.tooltips       = BrightTooltips
     chart_elements.listener       = BrightListener
     return BrightBuilder(chart_elements).build()
   }

@@ -15,6 +15,7 @@ function Bright() {
     chart_elements.chart          = BrightStackedArea
     chart_elements.reader         = BrightReader
     chart_elements.cropper        = BrightCropper
+    chart_elements.tooltips       = BrightTooltips
     chart_elements.listener       = BrightListener
     return BrightBuilder(chart_elements).build()
   }

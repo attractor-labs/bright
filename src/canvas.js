@@ -3,7 +3,7 @@ function BrightCanvas (canvas_settings) {
   var margin         = { top: 20, right: 20, bottom: 30, left: 50 }
 
     , canvas_element = d3.select(canvas_settings.target())
-                         .append("svg").attr('style', 'background-color: lightblue')
+                         .append("svg").attr('style', 'background-color: transparent')
                          .attr("width", canvas_settings.width())
                          .attr("height", canvas_settings.height())
                          .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
