@@ -47,7 +47,7 @@ function BrightBuilder (chart_elements) {
     canvas_settings.width    = chart_elements.settings.width;
     canvas_settings.height   = chart_elements.settings.height;
     canvas_settings.target   = chart_elements.settings.target;
-    this_class.canvas_object = chart_elements.canvas(canvas_settings);
+    this_class.canvas_object = new chart_elements.canvas(canvas_settings);
 
     return this_class.builder;
   }

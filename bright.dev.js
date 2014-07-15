@@ -525,7 +525,7 @@ function BrightBuilder (chart_elements) {
     canvas_settings.width    = chart_elements.settings.width;
     canvas_settings.height   = chart_elements.settings.height;
     canvas_settings.target   = chart_elements.settings.target;
-    this_class.canvas_object = chart_elements.canvas(canvas_settings);
+    this_class.canvas_object = new chart_elements.canvas(canvas_settings);
 
     return this_class.builder;
   }
@@ -635,42 +635,44 @@ function BrightBuilder (chart_elements) {
 
 function BrightCanvas (canvas_settings) {
 
-  var margin         = { top: 20, right: 20, bottom: 85, left: 50 }
+  var this_class = this;
 
-    , canvas_element = d3.select(canvas_settings.target())
+  this.margin         = { top: 20, right: 20, bottom: 85, left: 50 };
+
+  this.canvas_element = d3.select(canvas_settings.target())
                          .append("svg").attr('style', 'background-color: transparent')
-                         .attr("width", canvas_settings.width())
-                         .attr("height", canvas_settings.height())
-                         .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    , chart_space    = canvas_element.append("g");
+                         .attr("width", canvas_settings.width()).attr("height", canvas_settings.height())
+                         .append("g").attr("transform", "translate(" + this_class.margin.left + "," + this_class.margin.top + ")");
 
-  function canvas() {
+  this.chart_space    = this_class.canvas_element.append("g");
+
+  this.canvas = function () {
     var output          = {};
-    output.canvas       = canvas.canvas;
-    output.chart_space  = canvas.chart_space;
-    output.inner_width  = canvas.inner_width;
-    output.inner_height = canvas.inner_height;
+    output.canvas       = this_class.canvas.canvas;
+    output.chart_space  = this_class.canvas.chart_space;
+    output.inner_width  = this_class.canvas.inner_width;
+    output.inner_height = this_class.canvas.inner_height;
 
     return output;
   }
 
-  canvas.chart_space  = function () {
-    return chart_space;
+  this.canvas.chart_space  = function () {
+    return this_class.chart_space;
   }
 
-  canvas.canvas  = function () {
-    return canvas_element;
+  this.canvas.canvas  = function () {
+    return this_class.canvas_element;
   }
 
-  canvas.inner_width  = function () {
-    return canvas_settings.width() - margin.left - margin.right;
+  this.canvas.inner_width  = function () {
+    return canvas_settings.width() - this_class.margin.left - this_class.margin.right;
   }
 
-  canvas.inner_height = function () {
-    return canvas_settings.height() - margin.top - margin.bottom;
+  this.canvas.inner_height = function () {
+    return canvas_settings.height() - this_class.margin.top - this_class.margin.bottom;
   }
 
-  return canvas();
+  return this.canvas();
 }
 
 function Bright() {
@@ -742,41 +744,3 @@ function Bright() {
 }
 
 var bright = Bright();
-
-
-
-
-
-
-
-// function pageTrafficLogger (config) {
-
-//   var this_class                = this
-//     , config                    = config || {};
-//   this.kinesis_listener         = config.kinesis_listener;
-
-
-//   this.log = function () {
-//     var url_parts_config      = { require_page_parts: true }
-//       , lookup_keys_config    = { key_params: ['project', 'part_id', 'scaled_timestamp'] }
-//       , counters_config       = { lookup_keys_table: 'attractor_page_traffic',
-//                                   lookup_keys_column_name: 'project:id:timestamp',
-//                                   lookup_keys_counter_name: 'visitors' }
-//       , caching_config        = { scope_name: 'page:traffic', counter_name: 'visitors' }
-//       , counters_saver_config = { table_name: 'attractor_page_traffic',
-//                                   lookup_key_name: 'project:id:timestamp',
-//                                   counter_name: 'visitors' };
-
-//     this_class.kinesis_listener
-//               .pipe(new datapointsComponent().stream)
-//               .pipe(new urlPartsComponent(url_parts_config).stream)
-//               .pipe(new timestampsComponent().stream)
-//               .pipe(new lookupKeysComponent(lookup_keys_config).stream)
-//               .pipe(new countersComponent(counters_config).stream)
-//               .pipe(new countersCachingComponent(caching_config).stream)
-//               .pipe(new countersSaverComponent(counters_saver_config).stream);
-//   }
-
-// }
-
-// module.exports = pageTrafficLogger;

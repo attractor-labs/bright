@@ -1,39 +1,41 @@
 function BrightCanvas (canvas_settings) {
 
-  var margin         = { top: 20, right: 20, bottom: 85, left: 50 }
+  var this_class = this;
 
-    , canvas_element = d3.select(canvas_settings.target())
+  this.margin         = { top: 20, right: 20, bottom: 85, left: 50 };
+
+  this.canvas_element = d3.select(canvas_settings.target())
                          .append("svg").attr('style', 'background-color: transparent')
-                         .attr("width", canvas_settings.width())
-                         .attr("height", canvas_settings.height())
-                         .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    , chart_space    = canvas_element.append("g");
+                         .attr("width", canvas_settings.width()).attr("height", canvas_settings.height())
+                         .append("g").attr("transform", "translate(" + this_class.margin.left + "," + this_class.margin.top + ")");
 
-  function canvas() {
+  this.chart_space    = this_class.canvas_element.append("g");
+
+  this.canvas = function () {
     var output          = {};
-    output.canvas       = canvas.canvas;
-    output.chart_space  = canvas.chart_space;
-    output.inner_width  = canvas.inner_width;
-    output.inner_height = canvas.inner_height;
+    output.canvas       = this_class.canvas.canvas;
+    output.chart_space  = this_class.canvas.chart_space;
+    output.inner_width  = this_class.canvas.inner_width;
+    output.inner_height = this_class.canvas.inner_height;
 
     return output;
   }
 
-  canvas.chart_space  = function () {
-    return chart_space;
+  this.canvas.chart_space  = function () {
+    return this_class.chart_space;
   }
 
-  canvas.canvas  = function () {
-    return canvas_element;
+  this.canvas.canvas  = function () {
+    return this_class.canvas_element;
   }
 
-  canvas.inner_width  = function () {
-    return canvas_settings.width() - margin.left - margin.right;
+  this.canvas.inner_width  = function () {
+    return canvas_settings.width() - this_class.margin.left - this_class.margin.right;
   }
 
-  canvas.inner_height = function () {
-    return canvas_settings.height() - margin.top - margin.bottom;
+  this.canvas.inner_height = function () {
+    return canvas_settings.height() - this_class.margin.top - this_class.margin.bottom;
   }
 
-  return canvas();
+  return this.canvas();
 }
