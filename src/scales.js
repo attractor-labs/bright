@@ -1,34 +1,34 @@
 function BrightScales (scales_settings) {
 
-  var x_scale = null
-    , y_scale = null;
+  var this_class = this;
+  this.x_scale = null;
+  this.y_scale = null;
 
-  function scales() {
+  this.scales = function () {
     var output     = {};
 
-    output.x_scale = scales.x_scale();
-    output.y_scale = scales.y_scale();
+    output.x_scale = this_class.scales.x_scale();
+    output.y_scale = this_class.scales.y_scale();
 
-    x_scale.domain(d3.extent(scales_settings.dataset(), function(d) { return d.date; }));
-    y_scale.domain([0, parseInt(scales_settings.y_max+0.1*scales_settings.y_max)]);
-
+    this_class.x_scale.domain(d3.extent(scales_settings.dataset(), function(d) { return d.date; }));
+    this_class.y_scale.domain([0, parseInt(scales_settings.y_max+0.1*scales_settings.y_max)]);
 
     return output;
   }
 
-  scales.x_scale = function () {
-    if (x_scale) { return x_scale } else {
-      x_scale = d3.time.scale().range([0, scales_settings.width()])
-      return x_scale;
+  this.scales.x_scale = function () {
+    if (this_class.x_scale) { return this_class.x_scale } else {
+      this_class.x_scale = d3.time.scale().range([0, scales_settings.width()])
+      return this_class.x_scale;
     }
   }
 
-  scales.y_scale = function () {
-    if (y_scale) { return y_scale } else {
-      y_scale = d3.scale.linear().range([scales_settings.height(), 0]);
-      return y_scale;
+  this.scales.y_scale = function () {
+    if (this_class.y_scale) { return this_class.y_scale } else {
+      this_class.y_scale = d3.scale.linear().range([scales_settings.height(), 0]);
+      return this_class.y_scale;
     }
   }
 
-  return scales();
+  return this_class.scales();
 }

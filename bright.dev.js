@@ -176,7 +176,7 @@ function BrightCropper (cropper_settings) {
 
     var reader_output = new listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return initial_dataset }});
 
-    var recalculated_scales = listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
+    var recalculated_scales = new listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
     var recalculated_axis   = listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
 
     var recalculated_area   = d3.svg.area().interpolate("monotone")
@@ -443,37 +443,37 @@ function BrightAxis (axis_settings) {
 
 function BrightScales (scales_settings) {
 
-  var x_scale = null
-    , y_scale = null;
+  var this_class = this;
+  this.x_scale = null;
+  this.y_scale = null;
 
-  function scales() {
+  this.scales = function () {
     var output     = {};
 
-    output.x_scale = scales.x_scale();
-    output.y_scale = scales.y_scale();
+    output.x_scale = this_class.scales.x_scale();
+    output.y_scale = this_class.scales.y_scale();
 
-    x_scale.domain(d3.extent(scales_settings.dataset(), function(d) { return d.date; }));
-    y_scale.domain([0, parseInt(scales_settings.y_max+0.1*scales_settings.y_max)]);
-
+    this_class.x_scale.domain(d3.extent(scales_settings.dataset(), function(d) { return d.date; }));
+    this_class.y_scale.domain([0, parseInt(scales_settings.y_max+0.1*scales_settings.y_max)]);
 
     return output;
   }
 
-  scales.x_scale = function () {
-    if (x_scale) { return x_scale } else {
-      x_scale = d3.time.scale().range([0, scales_settings.width()])
-      return x_scale;
+  this.scales.x_scale = function () {
+    if (this_class.x_scale) { return this_class.x_scale } else {
+      this_class.x_scale = d3.time.scale().range([0, scales_settings.width()])
+      return this_class.x_scale;
     }
   }
 
-  scales.y_scale = function () {
-    if (y_scale) { return y_scale } else {
-      y_scale = d3.scale.linear().range([scales_settings.height(), 0]);
-      return y_scale;
+  this.scales.y_scale = function () {
+    if (this_class.y_scale) { return this_class.y_scale } else {
+      this_class.y_scale = d3.scale.linear().range([scales_settings.height(), 0]);
+      return this_class.y_scale;
     }
   }
 
-  return scales();
+  return this_class.scales();
 }
 
 function BrightBuilder (chart_elements) {
@@ -536,7 +536,7 @@ function BrightBuilder (chart_elements) {
     scales_settings.y_max    = this_class.dataset_object.y_max;
     scales_settings.width    = this_class.canvas_object.inner_width;
     scales_settings.height   = this_class.canvas_object.inner_height;
-    this_class.scales_object = chart_elements.scales(scales_settings);
+    this_class.scales_object = new chart_elements.scales(scales_settings);
 
     return this_class.builder;
   }

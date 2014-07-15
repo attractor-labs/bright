@@ -58,7 +58,7 @@ function BrightBuilder (chart_elements) {
     scales_settings.y_max    = this_class.dataset_object.y_max;
     scales_settings.width    = this_class.canvas_object.inner_width;
     scales_settings.height   = this_class.canvas_object.inner_height;
-    this_class.scales_object = chart_elements.scales(scales_settings);
+    this_class.scales_object = new chart_elements.scales(scales_settings);
 
     return this_class.builder;
   }
