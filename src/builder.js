@@ -12,9 +12,10 @@ function BrightBuilder (chart_elements) {
   }
 
   builder.read_initial_dataset = function () {
-    var read_settings     = {};
-    read_settings.dataset = chart_elements.settings.initial_dataset;
-    dataset_object        = chart_elements.reader(read_settings);
+    var read_settings         = {};
+    read_settings.dataset     = chart_elements.settings.initial_dataset;
+    read_settings.date_format = chart_elements.settings.date_format;
+    dataset_object            = chart_elements.reader(read_settings);
 
     return builder;
   }
@@ -108,6 +109,7 @@ function BrightBuilder (chart_elements) {
     listener_settings.chart_space      = canvas_object.chart_space;
     listener_settings.area             = chart_object.area;
     listener_settings.reader           = chart_elements.reader;
+    listener_settings.date_format      = chart_elements.settings.date_format;
     listener_settings.x_scale          = scales_object.x_scale;
     listener_settings.y_scale          = scales_object.y_scale;
 

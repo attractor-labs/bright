@@ -174,7 +174,7 @@ function BrightCropper (cropper_settings) {
   listen.push = function (datapoint) {
     listen.enrich_initial_dataset(datapoint);
 
-    var reader_output = listener_settings.reader({'dataset': function (){ return initial_dataset }});
+    var reader_output = listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return initial_dataset }});
 
     var recalculated_scales = listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
     var recalculated_axis   = listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
@@ -353,7 +353,7 @@ function BrightReader (reader_settings) {
   }
 
   reader.parse_date = function (date) {
-    return d3.time.format("%y-%b-%d").parse(date);
+    return d3.time.format(reader_settings.date_format()).parse(date);
   }
 
   reader.parse_dates = function () {
@@ -488,9 +488,10 @@ function BrightBuilder (chart_elements) {
   }
 
   builder.read_initial_dataset = function () {
-    var read_settings     = {};
-    read_settings.dataset = chart_elements.settings.initial_dataset;
-    dataset_object        = chart_elements.reader(read_settings);
+    var read_settings         = {};
+    read_settings.dataset     = chart_elements.settings.initial_dataset;
+    read_settings.date_format = chart_elements.settings.date_format;
+    dataset_object            = chart_elements.reader(read_settings);
 
     return builder;
   }
@@ -584,6 +585,7 @@ function BrightBuilder (chart_elements) {
     listener_settings.chart_space      = canvas_object.chart_space;
     listener_settings.area             = chart_object.area;
     listener_settings.reader           = chart_elements.reader;
+    listener_settings.date_format      = chart_elements.settings.date_format;
     listener_settings.x_scale          = scales_object.x_scale;
     listener_settings.y_scale          = scales_object.y_scale;
 
@@ -651,6 +653,7 @@ function Bright() {
   var width              = 100
     , height             = 200
     , target             = 'body'
+    , date_format        = '%y-%b-%d'
     , initial_dataset    = []
     , data_stream        = null
     , chart_type         = 'stacked-area';
@@ -672,6 +675,11 @@ function Bright() {
 
   settings.activate = function() {
     return settings()
+  }
+
+  settings.date_format = function(format) {
+    if (!arguments.length) return date_format; date_format = format;
+    return settings;
   }
 
   settings.chart_type = function(type) {

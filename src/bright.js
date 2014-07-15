@@ -2,6 +2,7 @@ function Bright() {
   var width              = 100
     , height             = 200
     , target             = 'body'
+    , date_format        = '%y-%b-%d'
     , initial_dataset    = []
     , data_stream        = null
     , chart_type         = 'stacked-area';
@@ -23,6 +24,11 @@ function Bright() {
 
   settings.activate = function() {
     return settings()
+  }
+
+  settings.date_format = function(format) {
+    if (!arguments.length) return date_format; date_format = format;
+    return settings;
   }
 
   settings.chart_type = function(type) {

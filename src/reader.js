@@ -48,7 +48,7 @@ function BrightReader (reader_settings) {
   }
 
   reader.parse_date = function (date) {
-    return d3.time.format("%y-%b-%d").parse(date);
+    return d3.time.format(reader_settings.date_format()).parse(date);
   }
 
   reader.parse_dates = function () {
