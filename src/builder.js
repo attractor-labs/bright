@@ -145,7 +145,7 @@ function BrightBuilder (chart_elements) {
 
     listener_settings.initial_dataset  = chart_elements.settings.initial_dataset;
 
-    return chart_elements.listener(listener_settings);
+    return new chart_elements.listener(listener_settings);
   }
 
   this.builder.build = function () {
