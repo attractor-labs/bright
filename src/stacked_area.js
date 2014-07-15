@@ -1,6 +1,6 @@
 function BrightStackedArea (chart_settings) {
 
-  function chart() {
+  this.chart = function () {
     var output = {}
 
     output.area = d3.svg.area().interpolate("monotone")
@@ -23,6 +23,6 @@ function BrightStackedArea (chart_settings) {
     return output;
   }
 
-  return chart();
+  return this.chart();
 }
 

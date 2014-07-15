@@ -81,7 +81,7 @@ function BrightBuilder (chart_elements) {
     chart_settings.color       = this_class.dataset_object.color;
     chart_settings.x_scale     = this_class.scales_object.x_scale;
     chart_settings.y_scale     = this_class.scales_object.y_scale;
-    this_class.chart_object    = chart_elements.chart(chart_settings);
+    this_class.chart_object    = new chart_elements.chart(chart_settings);
 
     return this_class.builder;
   }
