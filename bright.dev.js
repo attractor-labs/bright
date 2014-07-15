@@ -174,7 +174,7 @@ function BrightCropper (cropper_settings) {
   listen.push = function (datapoint) {
     listen.enrich_initial_dataset(datapoint);
 
-    var reader_output = listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return initial_dataset }});
+    var reader_output = new listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return initial_dataset }});
 
     var recalculated_scales = listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
     var recalculated_axis   = listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
@@ -305,83 +305,85 @@ function BrightStackedArea (chart_settings) {
 
 function BrightReader (reader_settings) {
 
-  var dataset         = JSON.parse(JSON.stringify(reader_settings.dataset()))
-    , y_max           = 0
-    , stacked_dataset = null
-    , color           = null;
+  var this_class = this;
 
-  function reader() {
-    var output = {}; reader.parse_dates(); reader.enrich_dataset();
+  this.dataset         = JSON.parse(JSON.stringify(reader_settings.dataset()));
+  this.y_max           = 0;
+  this.stacked_dataset = null;
+  this.color           = null;
 
-    color = d3.scale.category20();
-    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
-    reader.stacked_dataset();
+  this.reader = function () {
+    var output = {}; this_class.reader.parse_dates(); this_class.reader.enrich_dataset();
 
-    reader.get_y_max();
+    this_class.color = d3.scale.category20();
+    this_class.color.domain(d3.keys(this_class.dataset[0]).filter(function(key) { return key !== "date"; }));
+    this_class.reader.stacked_dataset();
 
-    output.dataset         = reader.dataset;
-    output.stacked_dataset = reader.stacked_dataset;
-    output.color           = reader.color();
-    output.y_max           = y_max;
+    this_class.reader.get_y_max();
+
+    output.dataset         = this_class.reader.dataset;
+    output.stacked_dataset = this_class.reader.stacked_dataset;
+    output.color           = this_class.reader.color();
+    output.y_max           = this_class.y_max;
     return output;
   }
 
-  reader.get_y_max = function () {
-    var keys = d3.keys(dataset[0]).filter(function(key) { return key !== "date"; });
-    dataset.forEach(function (datapoint){
+  this.reader.get_y_max = function () {
+    var keys = d3.keys(this_class.dataset[0]).filter(function(key) { return key !== "date"; });
+    this_class.dataset.forEach(function (datapoint){
       var current_sum = keys.map(function(attribute) { return(datapoint[attribute]/1) }).reduce(function(a, b) { return a + b })
-      if (y_max < current_sum) { y_max = current_sum }
+      if (this_class.y_max < current_sum) { this_class.y_max = current_sum }
     });
   }
 
-  reader.dataset = function () {
-    return dataset;
+  this.reader.dataset = function () {
+    return this_class.dataset;
   }
 
-  reader.color = function () {
-    return color;
+  this.reader.color = function () {
+    return this_class.color;
   }
 
-  reader.stacked_dataset = function () {
-    if (stacked_dataset) { return stacked_dataset } else {
+  this.reader.stacked_dataset = function () {
+    if (this_class.stacked_dataset) { return this_class.stacked_dataset } else {
       var stack = d3.layout.stack().values(function(d) { return d.values; })
-      stacked_dataset = stack(color.domain().map(function(name) {
-        return { name: name, values: dataset.map(function(d) { return { date: d.date, y: d[name]/1 } }) };
+      this_class.stacked_dataset = stack(this_class.color.domain().map(function(name) {
+        return { name: name, values: this_class.dataset.map(function(d) { return { date: d.date, y: d[name]/1 } }) };
       }));
-      return stacked_dataset;
+      return this_class.stacked_dataset;
     }
   }
 
-  reader.parse_date = function (date) {
+  this.reader.parse_date = function (date) {
     return d3.time.format(reader_settings.date_format()).parse(date);
   }
 
-  reader.parse_dates = function () {
-    dataset.forEach(function (datapoint) {
-      datapoint.date = reader.parse_date(datapoint.date);
+  this.reader.parse_dates = function () {
+    this_class.dataset.forEach(function (datapoint) {
+      datapoint.date = this_class.reader.parse_date(datapoint.date);
     });
   }
 
-  reader.enrich_dataset = function () {
-    var id_length = dataset.length;
+  this.reader.enrich_dataset = function () {
+    var id_length = this_class.dataset.length;
 
-    d3.keys(dataset[0]).forEach(function (key) {
+    d3.keys(this_class.dataset[0]).forEach(function (key) {
       var i = 0;
       while (i < id_length) {
-        if (!dataset[i][key]) { dataset[i][key] = '0' };
+        if (!this_class.dataset[i][key]) { this_class.dataset[i][key] = '0' };
         i++;
       }
       // console.log(JSON.stringify(dataset))
     });
 
-    d3.keys(dataset[0]).forEach(function (key) {
+    d3.keys(this_class.dataset[0]).forEach(function (key) {
       var i = 0;
       var all_zero = true;
       while (i < id_length) {
-        if (dataset[i][key] != '0') { all_zero = false };
+        if (this_class.dataset[i][key] != '0') { all_zero = false };
         i++;
         if (i == id_length && all_zero == true) {
-          dataset.forEach(function (element) {
+          this_class.dataset.forEach(function (element) {
             delete element[key];
           });
         }
@@ -391,7 +393,7 @@ function BrightReader (reader_settings) {
   }
 
 
-  return reader();
+  return this.reader();
 }
 
 function BrightAxis (axis_settings) {
@@ -475,125 +477,147 @@ function BrightScales (scales_settings) {
 }
 
 function BrightBuilder (chart_elements) {
-  var canvas_object   = null
-    , scales_object   = null
-    , axis_object     = null
-    , dataset_object  = null
-    , chart_object    = null;
 
-  function builder () {
-    return builder.draw_canvas().read_initial_dataset()
-                  .prepare_scales().build_axis().build_chart()
-                  .crop_edges().prepare_legend().prepare_tooltips().listen();
+  var this_class       = this;
+  this.canvas_object   = null
+  this.scales_object   = null
+  this.axis_object     = null
+  this.dataset_object  = null
+  this.chart_object    = null;
+
+  this.builder = function () {
+    return this_class.builder.draw_canvas().read_initial_dataset()
+                     .prepare_scales().build_axis().build_chart()
+                     .crop_edges().prepare_legend().prepare_tooltips().listen();
   }
 
-  builder.read_initial_dataset = function () {
+  this.builder.canvas_object  = function () {
+    return this_class.canvas_object
+  }
+
+  this.builder.scales_object  = function () {
+    return this_class.scales_object
+  }
+
+  this.builder.axis_object    = function () {
+    return this_class.axis_object
+  }
+
+  this.builder.dataset_object = function () {
+    return this_class.dataset_object
+  }
+
+  this.builder.chart_object   = function () {
+    return this_class.chart_object
+  }
+
+  this.builder.read_initial_dataset = function () {
     var read_settings         = {};
     read_settings.dataset     = chart_elements.settings.initial_dataset;
     read_settings.date_format = chart_elements.settings.date_format;
-    dataset_object            = chart_elements.reader(read_settings);
+    this_class.dataset_object = new chart_elements.reader(read_settings);
 
-    return builder;
+    return this_class.builder;
   }
 
-  builder.draw_canvas = function () {
-    var canvas_settings    = {};
-    canvas_settings.width  = chart_elements.settings.width;
-    canvas_settings.height = chart_elements.settings.height;
-    canvas_settings.target = chart_elements.settings.target;
-    canvas_object          = chart_elements.canvas(canvas_settings);
+  this.builder.draw_canvas = function () {
+    var canvas_settings      = {};
+    canvas_settings.width    = chart_elements.settings.width;
+    canvas_settings.height   = chart_elements.settings.height;
+    canvas_settings.target   = chart_elements.settings.target;
+    this_class.canvas_object = chart_elements.canvas(canvas_settings);
 
-    return builder;
+    return this_class.builder;
   }
 
-  builder.prepare_scales = function () {
-    var scales_settings     = {};
-    scales_settings.dataset = dataset_object.dataset;
-    scales_settings.y_max   = dataset_object.y_max;
-    scales_settings.width   = canvas_object.inner_width;
-    scales_settings.height  = canvas_object.inner_height;
-    scales_object           = chart_elements.scales(scales_settings);
+  this.builder.prepare_scales = function () {
+    var scales_settings      = {};
+    scales_settings.dataset  = this_class.dataset_object.dataset;
+    scales_settings.y_max    = this_class.dataset_object.y_max;
+    scales_settings.width    = this_class.canvas_object.inner_width;
+    scales_settings.height   = this_class.canvas_object.inner_height;
+    this_class.scales_object = chart_elements.scales(scales_settings);
 
-    return builder;
+    return this_class.builder;
   }
 
-  builder.build_axis = function () {
+  this.builder.build_axis = function () {
     var axis_settings        = {};
-    axis_settings.canvas     = canvas_object.canvas;
-    axis_settings.x_scale    = scales_object.x_scale;
-    axis_settings.y_scale    = scales_object.y_scale;
-    axis_settings.height     = canvas_object.inner_height;
-    axis_object              = chart_elements.axis(axis_settings);
+    axis_settings.canvas     = this_class.canvas_object.canvas;
+    axis_settings.x_scale    = this_class.scales_object.x_scale;
+    axis_settings.y_scale    = this_class.scales_object.y_scale;
+    axis_settings.height     = this_class.canvas_object.inner_height;
+    this_class.axis_object   = chart_elements.axis(axis_settings);
 
-    return builder;
+    return this_class.builder;
   }
 
-  builder.build_chart = function () {
+  this.builder.build_chart = function () {
     var chart_settings         = {};
-    chart_settings.chart_space = canvas_object.chart_space;
-    chart_settings.dataset     = dataset_object.stacked_dataset;
-    chart_settings.color       = dataset_object.color;
-    chart_settings.x_scale     = scales_object.x_scale;
-    chart_settings.y_scale     = scales_object.y_scale;
-    chart_object               = chart_elements.chart(chart_settings);
+    chart_settings.chart_space = this_class.canvas_object.chart_space;
+    chart_settings.dataset     = this_class.dataset_object.stacked_dataset;
+    chart_settings.color       = this_class.dataset_object.color;
+    chart_settings.x_scale     = this_class.scales_object.x_scale;
+    chart_settings.y_scale     = this_class.scales_object.y_scale;
+    this_class.chart_object    = chart_elements.chart(chart_settings);
 
-    return builder;
+    return this_class.builder;
   }
 
-  builder.crop_edges = function () {
+  this.builder.crop_edges = function () {
     var crop_settings = {}
-    crop_settings.canvas_object = canvas_object;
-    crop_settings.axis_object   = axis_object;
-    crop_object                 = chart_elements.cropper(crop_settings);
-    return builder;
+    crop_settings.canvas_object = this_class.canvas_object;
+    crop_settings.axis_object   = this_class.axis_object;
+    this_class.crop_object      = chart_elements.cropper(crop_settings);
+    return this_class.builder;
   }
 
-  builder.prepare_tooltips = function () {
+  this.builder.prepare_tooltips = function () {
     var tooltips_settings = {}
-    tooltips_settings.x_scale      = scales_object.x_scale;
-    tooltips_settings.canvas       = canvas_object.canvas;
-    tooltips_settings.chart_space  = canvas_object.chart_space;
-    tooltips_settings.inner_height = canvas_object.inner_height;
-    tooltips_settings.inner_width  = canvas_object.inner_width;
-    tooltips_settings.color        = dataset_object.color;
-    tooltips_settings.dataset      = dataset_object.dataset;
-    tooltips_object                = chart_elements.tooltips(tooltips_settings);
-    return builder;
+    tooltips_settings.x_scale      = this_class.scales_object.x_scale;
+    tooltips_settings.canvas       = this_class.canvas_object.canvas;
+    tooltips_settings.chart_space  = this_class.canvas_object.chart_space;
+    tooltips_settings.inner_height = this_class.canvas_object.inner_height;
+    tooltips_settings.inner_width  = this_class.canvas_object.inner_width;
+    tooltips_settings.color        = this_class.dataset_object.color;
+    tooltips_settings.dataset      = this_class.dataset_object.dataset;
+    this_class.tooltips_object     = chart_elements.tooltips(tooltips_settings);
+    return this_class.builder;
   }
 
-  builder.prepare_legend = function () {
+  this.builder.prepare_legend = function () {
     var legend_settings = {}
-    legend_settings.x_scale      = scales_object.x_scale;
-    legend_settings.canvas       = canvas_object.canvas;
-    legend_settings.inner_height = canvas_object.inner_height;
-    legend_settings.inner_width  = canvas_object.inner_width;
-    legend_settings.color        = dataset_object.color;
-    legend_settings.dataset      = dataset_object.dataset;
-    legend_object                = chart_elements.legend(legend_settings);
-    return builder;
+    legend_settings.x_scale      = this_class.scales_object.x_scale;
+    legend_settings.canvas       = this_class.canvas_object.canvas;
+    legend_settings.inner_height = this_class.canvas_object.inner_height;
+    legend_settings.inner_width  = this_class.canvas_object.inner_width;
+    legend_settings.color        = this_class.dataset_object.color;
+    legend_settings.dataset      = this_class.dataset_object.dataset;
+    this_class.legend_object     = chart_elements.legend(legend_settings);
+    return this_class.builder;
   }
 
-  builder.listen = function () {
+  this.builder.listen = function () {
     var listener_settings = {};
     listener_settings.tooltips         = chart_elements.tooltips
     listener_settings.legend           = chart_elements.legend
 
-    listener_settings.canvas           = canvas_object.canvas;
-    listener_settings.chart            = chart_object.chart;
-    listener_settings.chart_identifier = chart_object.chart_identifier;
-    listener_settings.chart_place      = chart_object.chart_place;
-    listener_settings.chart_space      = canvas_object.chart_space;
-    listener_settings.area             = chart_object.area;
+    listener_settings.canvas           = this_class.canvas_object.canvas;
+    listener_settings.chart            = this_class.chart_object.chart;
+    listener_settings.chart_identifier = this_class.chart_object.chart_identifier;
+    listener_settings.chart_place      = this_class.chart_object.chart_place;
+    listener_settings.chart_space      = this_class.canvas_object.chart_space;
+    listener_settings.area             = this_class.chart_object.area;
     listener_settings.reader           = chart_elements.reader;
     listener_settings.date_format      = chart_elements.settings.date_format;
-    listener_settings.x_scale          = scales_object.x_scale;
-    listener_settings.y_scale          = scales_object.y_scale;
+    listener_settings.x_scale          = this_class.scales_object.x_scale;
+    listener_settings.y_scale          = this_class.scales_object.y_scale;
 
-    listener_settings.width            = canvas_object.inner_width;
-    listener_settings.height           = canvas_object.inner_height;
+    listener_settings.width            = this_class.canvas_object.inner_width;
+    listener_settings.height           = this_class.canvas_object.inner_height;
     listener_settings.scales           = chart_elements.scales;
-    listener_settings.painted_x_axis   = axis_object.painted_x_axis;
-    listener_settings.painted_y_axis   = axis_object.painted_y_axis;
+    listener_settings.painted_x_axis   = this_class.axis_object.painted_x_axis;
+    listener_settings.painted_y_axis   = this_class.axis_object.painted_y_axis;
     listener_settings.axis             = chart_elements.axis;
 
 
@@ -602,11 +626,11 @@ function BrightBuilder (chart_elements) {
     return chart_elements.listener(listener_settings);
   }
 
-  builder.build = function () {
-    return builder();
+  this.builder.build = function () {
+    return this_class.builder();
   }
 
-  return builder;
+  return this_class.builder;
 }
 
 function BrightCanvas (canvas_settings) {
@@ -650,17 +674,19 @@ function BrightCanvas (canvas_settings) {
 }
 
 function Bright() {
-  var width              = 100
-    , height             = 200
-    , target             = 'body'
-    , date_format        = '%y-%b-%d'
-    , initial_dataset    = []
-    , data_stream        = null
-    , chart_type         = 'stacked-area';
+  var this_class = this;
 
-  function settings() {
+  this.width              = 100
+  this.height             = 200
+  this.target             = 'body'
+  this.date_format        = '%y-%b-%d'
+  this.initial_dataset    = []
+  this.data_stream        = null
+  this.chart_type         = 'stacked-area';
+
+  this.settings = function () {
     var chart_elements            = {};
-    chart_elements.settings       = settings
+    chart_elements.settings       = this_class.settings
     chart_elements.canvas         = BrightCanvas
     chart_elements.scales         = BrightScales
     chart_elements.axis           = BrightAxis
@@ -670,49 +696,87 @@ function Bright() {
     chart_elements.tooltips       = BrightTooltips
     chart_elements.legend         = BrightLegend
     chart_elements.listener       = BrightListener
-    return BrightBuilder(chart_elements).build()
+    return new BrightBuilder(chart_elements).build()
   }
 
-  settings.activate = function() {
-    return settings()
+  this.settings.activate = function() {
+    return this_class.settings()
   }
 
-  settings.date_format = function(format) {
-    if (!arguments.length) return date_format; date_format = format;
-    return settings;
+  this.settings.date_format = function(format) {
+    if (!arguments.length) return this_class.date_format; this_class.date_format = format;
+    return this_class.settings;
   }
 
-  settings.chart_type = function(type) {
-    if (!arguments.length) return chart_type; chart_type = type;
-    return settings;
+  this.settings.chart_type = function(type) {
+    if (!arguments.length) return this_class.chart_type; this_class.chart_type = type;
+    return this_class.settings;
   }
 
-  settings.initial_dataset = function(dataset) {
-    if (!arguments.length) return initial_dataset; initial_dataset = dataset;
-    return settings;
+  this.settings.initial_dataset = function(dataset) {
+    if (!arguments.length) return this_class.initial_dataset; this_class.initial_dataset = dataset;
+    return this_class.settings;
   }
 
-  settings.data_stream = function(stream_function) {
-    if (!arguments.length) return data_stream; data_stream = stream_function;
-    return settings;
+  this.settings.data_stream = function(stream_function) {
+    if (!arguments.length) return this_class.data_stream; this_class.data_stream = stream_function;
+    return this_class.settings;
   }
 
-  settings.target = function(identifier) {
-    if (!arguments.length) return target; target = identifier;
-    return settings;
+  this.settings.target = function(identifier) {
+    if (!arguments.length) return this_class.target; this_class.target = identifier;
+    return this_class.settings;
   }
 
-  settings.width = function(value) {
-    if (!arguments.length) return width; width = value;
-    return settings;
+  this.settings.width = function(value) {
+    if (!arguments.length) return this_class.width; this_class.width = value;
+    return this_class.settings;
   };
 
-  settings.height = function(value) {
-    if (!arguments.length) return height; height = value;
-    return settings;
+  this.settings.height = function(value) {
+    if (!arguments.length) return this_class.height; this_class.height = value;
+    return this_class.settings;
   };
 
-  return settings;
+  return this_class.settings;
 }
 
 var bright = Bright();
+
+
+
+
+
+
+
+// function pageTrafficLogger (config) {
+
+//   var this_class                = this
+//     , config                    = config || {};
+//   this.kinesis_listener         = config.kinesis_listener;
+
+
+//   this.log = function () {
+//     var url_parts_config      = { require_page_parts: true }
+//       , lookup_keys_config    = { key_params: ['project', 'part_id', 'scaled_timestamp'] }
+//       , counters_config       = { lookup_keys_table: 'attractor_page_traffic',
+//                                   lookup_keys_column_name: 'project:id:timestamp',
+//                                   lookup_keys_counter_name: 'visitors' }
+//       , caching_config        = { scope_name: 'page:traffic', counter_name: 'visitors' }
+//       , counters_saver_config = { table_name: 'attractor_page_traffic',
+//                                   lookup_key_name: 'project:id:timestamp',
+//                                   counter_name: 'visitors' };
+
+//     this_class.kinesis_listener
+//               .pipe(new datapointsComponent().stream)
+//               .pipe(new urlPartsComponent(url_parts_config).stream)
+//               .pipe(new timestampsComponent().stream)
+//               .pipe(new lookupKeysComponent(lookup_keys_config).stream)
+//               .pipe(new countersComponent(counters_config).stream)
+//               .pipe(new countersCachingComponent(caching_config).stream)
+//               .pipe(new countersSaverComponent(counters_saver_config).stream);
+//   }
+
+// }
+
+// module.exports = pageTrafficLogger;

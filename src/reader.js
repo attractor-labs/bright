@@ -1,82 +1,84 @@
 function BrightReader (reader_settings) {
 
-  var dataset         = JSON.parse(JSON.stringify(reader_settings.dataset()))
-    , y_max           = 0
-    , stacked_dataset = null
-    , color           = null;
+  var this_class = this;
 
-  function reader() {
-    var output = {}; reader.parse_dates(); reader.enrich_dataset();
+  this.dataset         = JSON.parse(JSON.stringify(reader_settings.dataset()));
+  this.y_max           = 0;
+  this.stacked_dataset = null;
+  this.color           = null;
 
-    color = d3.scale.category20();
-    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== "date"; }));
-    reader.stacked_dataset();
+  this.reader = function () {
+    var output = {}; this_class.reader.parse_dates(); this_class.reader.enrich_dataset();
 
-    reader.get_y_max();
+    this_class.color = d3.scale.category20();
+    this_class.color.domain(d3.keys(this_class.dataset[0]).filter(function(key) { return key !== "date"; }));
+    this_class.reader.stacked_dataset();
 
-    output.dataset         = reader.dataset;
-    output.stacked_dataset = reader.stacked_dataset;
-    output.color           = reader.color();
-    output.y_max           = y_max;
+    this_class.reader.get_y_max();
+
+    output.dataset         = this_class.reader.dataset;
+    output.stacked_dataset = this_class.reader.stacked_dataset;
+    output.color           = this_class.reader.color();
+    output.y_max           = this_class.y_max;
     return output;
   }
 
-  reader.get_y_max = function () {
-    var keys = d3.keys(dataset[0]).filter(function(key) { return key !== "date"; });
-    dataset.forEach(function (datapoint){
+  this.reader.get_y_max = function () {
+    var keys = d3.keys(this_class.dataset[0]).filter(function(key) { return key !== "date"; });
+    this_class.dataset.forEach(function (datapoint){
       var current_sum = keys.map(function(attribute) { return(datapoint[attribute]/1) }).reduce(function(a, b) { return a + b })
-      if (y_max < current_sum) { y_max = current_sum }
+      if (this_class.y_max < current_sum) { this_class.y_max = current_sum }
     });
   }
 
-  reader.dataset = function () {
-    return dataset;
+  this.reader.dataset = function () {
+    return this_class.dataset;
   }
 
-  reader.color = function () {
-    return color;
+  this.reader.color = function () {
+    return this_class.color;
   }
 
-  reader.stacked_dataset = function () {
-    if (stacked_dataset) { return stacked_dataset } else {
+  this.reader.stacked_dataset = function () {
+    if (this_class.stacked_dataset) { return this_class.stacked_dataset } else {
       var stack = d3.layout.stack().values(function(d) { return d.values; })
-      stacked_dataset = stack(color.domain().map(function(name) {
-        return { name: name, values: dataset.map(function(d) { return { date: d.date, y: d[name]/1 } }) };
+      this_class.stacked_dataset = stack(this_class.color.domain().map(function(name) {
+        return { name: name, values: this_class.dataset.map(function(d) { return { date: d.date, y: d[name]/1 } }) };
       }));
-      return stacked_dataset;
+      return this_class.stacked_dataset;
     }
   }
 
-  reader.parse_date = function (date) {
+  this.reader.parse_date = function (date) {
     return d3.time.format(reader_settings.date_format()).parse(date);
   }
 
-  reader.parse_dates = function () {
-    dataset.forEach(function (datapoint) {
-      datapoint.date = reader.parse_date(datapoint.date);
+  this.reader.parse_dates = function () {
+    this_class.dataset.forEach(function (datapoint) {
+      datapoint.date = this_class.reader.parse_date(datapoint.date);
     });
   }
 
-  reader.enrich_dataset = function () {
-    var id_length = dataset.length;
+  this.reader.enrich_dataset = function () {
+    var id_length = this_class.dataset.length;
 
-    d3.keys(dataset[0]).forEach(function (key) {
+    d3.keys(this_class.dataset[0]).forEach(function (key) {
       var i = 0;
       while (i < id_length) {
-        if (!dataset[i][key]) { dataset[i][key] = '0' };
+        if (!this_class.dataset[i][key]) { this_class.dataset[i][key] = '0' };
         i++;
       }
       // console.log(JSON.stringify(dataset))
     });
 
-    d3.keys(dataset[0]).forEach(function (key) {
+    d3.keys(this_class.dataset[0]).forEach(function (key) {
       var i = 0;
       var all_zero = true;
       while (i < id_length) {
-        if (dataset[i][key] != '0') { all_zero = false };
+        if (this_class.dataset[i][key] != '0') { all_zero = false };
         i++;
         if (i == id_length && all_zero == true) {
-          dataset.forEach(function (element) {
+          this_class.dataset.forEach(function (element) {
             delete element[key];
           });
         }
@@ -86,5 +88,5 @@ function BrightReader (reader_settings) {
   }
 
 
-  return reader();
+  return this.reader();
 }

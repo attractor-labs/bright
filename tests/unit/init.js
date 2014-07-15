@@ -10,6 +10,7 @@ before(function(done) {
     scripts: ["http://d3js.org/d3.v3.min.js", "../../bright.dev.js"],
     done: function(errors, window) {
       global.Bright = window.Bright;
+      global.BrightBuilder = window.BrightBuilder;
       global.d3     = window.d3;
       global.doc    = window.document;
       window.devicePixelRatio = 2;
