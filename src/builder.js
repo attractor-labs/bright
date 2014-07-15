@@ -64,12 +64,13 @@ function BrightBuilder (chart_elements) {
   }
 
   this.builder.build_axis = function () {
-    var axis_settings        = {};
-    axis_settings.canvas     = this_class.canvas_object.canvas;
-    axis_settings.x_scale    = this_class.scales_object.x_scale;
-    axis_settings.y_scale    = this_class.scales_object.y_scale;
-    axis_settings.height     = this_class.canvas_object.inner_height;
-    this_class.axis_object   = new chart_elements.axis(axis_settings);
+    var axis_settings              = {};
+    axis_settings.canvas           = this_class.canvas_object.canvas;
+    axis_settings.chart_identifier = chart_elements.settings.chart_identifier;
+    axis_settings.x_scale          = this_class.scales_object.x_scale;
+    axis_settings.y_scale          = this_class.scales_object.y_scale;
+    axis_settings.height           = this_class.canvas_object.inner_height;
+    this_class.axis_object         = new chart_elements.axis(axis_settings);
 
     return this_class.builder;
   }
@@ -89,6 +90,7 @@ function BrightBuilder (chart_elements) {
   this.builder.crop_edges = function () {
     var crop_settings = {}
     crop_settings.canvas_object = this_class.canvas_object;
+    crop_settings.chart_identifier = chart_elements.settings.chart_identifier;
     crop_settings.axis_object   = this_class.axis_object;
     this_class.crop_object      = new chart_elements.cropper(crop_settings);
     return this_class.builder;
@@ -115,12 +117,15 @@ function BrightBuilder (chart_elements) {
     legend_settings.inner_width  = this_class.canvas_object.inner_width;
     legend_settings.color        = this_class.dataset_object.color;
     legend_settings.dataset      = this_class.dataset_object.dataset;
+    legend_settings.chart_identifier = chart_elements.settings.chart_identifier;
     this_class.legend_object     = new chart_elements.legend(legend_settings);
     return this_class.builder;
   }
 
   this.builder.listen = function () {
     var listener_settings = {};
+
+    listener_settings.time_interval    = chart_elements.settings.time_interval
     listener_settings.tooltips         = chart_elements.tooltips
     listener_settings.legend           = chart_elements.legend
 
@@ -141,6 +146,7 @@ function BrightBuilder (chart_elements) {
     listener_settings.painted_x_axis   = this_class.axis_object.painted_x_axis;
     listener_settings.painted_y_axis   = this_class.axis_object.painted_y_axis;
     listener_settings.axis             = chart_elements.axis;
+    listener_settings.chart_identifier = chart_elements.settings.chart_identifier;
 
 
     listener_settings.initial_dataset  = chart_elements.settings.initial_dataset;

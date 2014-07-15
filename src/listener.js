@@ -3,7 +3,7 @@
   var this_class = this;
 
   this.initial_dataset = listener_settings.initial_dataset()
-  this.day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(24*3600*1000))
+  this.day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(listener_settings.time_interval()))
   this.chart           = listener_settings.chart
   this.painted_x_axis  = listener_settings.painted_x_axis
   this.painted_y_axis  = listener_settings.painted_y_axis
@@ -19,7 +19,7 @@
     var reader_output = new listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return this_class.initial_dataset }});
 
     var recalculated_scales = new listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - this_class.day_distance }, 'height': listener_settings.height});
-    var recalculated_axis   = new listener_settings.axis({'skip': true, 'painted_x': this_class.painted_x_axis, 'painted_y': this_class.painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
+    var recalculated_axis   = new listener_settings.axis({'chart_identifier': listener_settings.chart_identifier, 'skip': true, 'painted_x': this_class.painted_x_axis, 'painted_y': this_class.painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
 
     var recalculated_area   = d3.svg.area().interpolate("monotone")
                                 .x(function(d) { return listener_settings.x_scale(d.date); })
@@ -54,7 +54,8 @@
     legend_settings.inner_width  = listener_settings.width;
     legend_settings.color        = reader_output.color;
     legend_settings.dataset      = reader_output.dataset;
-    d3.select(".legend").remove();
+    legend_settings.chart_identifier = listener_settings.chart_identifier;
+    d3.select(".legend"+listener_settings.chart_identifier()).remove();
     new listener_settings.legend(legend_settings);
 
     tooltips_settings = {}

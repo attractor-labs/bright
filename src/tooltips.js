@@ -3,7 +3,6 @@ function BrightTooltips (tooltips_settings) {
   var this_class = this;
 
   this.tooltips = function () {
-    var day_distance = tooltips_settings.x_scale(new Date(0)) - tooltips_settings.x_scale(new Date(24*3600*1000));
     var focus = tooltips_settings.canvas().append("g").attr("class", "focus").style("display", "none");
     focus.append("rect")
         .attr("class", "y0")

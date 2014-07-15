@@ -1,11 +1,10 @@
 function BrightLegend (legend_settings) {
 
   this.legend = function () {
-    var day_distance = legend_settings.x_scale(new Date(0)) - legend_settings.x_scale(new Date(24*3600*1000));
-    var legend_item_place = legend_settings.canvas().append("g").attr("class", "legend")
+    var legend_item_place = legend_settings.canvas().append("g").attr("class", "legend"+legend_settings.chart_identifier())
     var legend_item = legend_item_place.selectAll("rect.legenditem").data(legend_settings.color.domain());
     var legend_item_enter = legend_item.enter().append("rect")
-                            .attr("class", "legenditem")
+                            .attr("class", "legenditem"+legend_settings.chart_identifier())
                             .attr("width", 15)
                             .attr("height", 15)
                             .attr("transform", function (d, i) {
@@ -19,7 +18,7 @@ function BrightLegend (legend_settings) {
                             })
                             .attr("fill", function (d, i) { return legend_settings.color(d) });
     var legend_item_enter = legend_item.enter().append("text")
-                            .attr("class", "legenditemtext")
+                            .attr("class", "legenditemtext"+legend_settings.chart_identifier())
                             .attr("dx", 18).attr("dy", 12)
                             .attr("style", "font-size: 12px")
                             .attr("transform", function (d, i) {

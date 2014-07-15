@@ -1,12 +1,14 @@
 function Bright() {
   var this_class = this;
 
-  this.width              = 100
-  this.height             = 200
-  this.target             = 'body'
-  this.date_format        = '%y-%b-%d'
-  this.initial_dataset    = []
-  this.data_stream        = null
+  this.width              = 100;
+  this.height             = 200;
+  this.target             = 'body';
+  this.date_format        = '%y-%b-%d';
+  this.time_interval      = 5000;
+  this.initial_dataset    = [];
+  this.data_stream        = null;
+  this.chart_identifier   = "chart" + Math.floor(Math.random()*10000000);
   this.chart_type         = 'stacked-area';
 
   this.settings = function () {
@@ -26,6 +28,15 @@ function Bright() {
 
   this.settings.activate = function() {
     return this_class.settings()
+  }
+
+  this.settings.chart_identifier = function() {
+    return this_class.chart_identifier;
+  }
+
+  this.settings.time_interval = function(interval) {
+    if (!arguments.length) return this_class.time_interval; this_class.time_interval = interval;
+    return this_class.settings;
   }
 
   this.settings.date_format = function(format) {

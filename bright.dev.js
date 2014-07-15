@@ -1,11 +1,10 @@
 function BrightLegend (legend_settings) {
 
   this.legend = function () {
-    var day_distance = legend_settings.x_scale(new Date(0)) - legend_settings.x_scale(new Date(24*3600*1000));
-    var legend_item_place = legend_settings.canvas().append("g").attr("class", "legend")
+    var legend_item_place = legend_settings.canvas().append("g").attr("class", "legend"+legend_settings.chart_identifier())
     var legend_item = legend_item_place.selectAll("rect.legenditem").data(legend_settings.color.domain());
     var legend_item_enter = legend_item.enter().append("rect")
-                            .attr("class", "legenditem")
+                            .attr("class", "legenditem"+legend_settings.chart_identifier())
                             .attr("width", 15)
                             .attr("height", 15)
                             .attr("transform", function (d, i) {
@@ -19,7 +18,7 @@ function BrightLegend (legend_settings) {
                             })
                             .attr("fill", function (d, i) { return legend_settings.color(d) });
     var legend_item_enter = legend_item.enter().append("text")
-                            .attr("class", "legenditemtext")
+                            .attr("class", "legenditemtext"+legend_settings.chart_identifier())
                             .attr("dx", 18).attr("dy", 12)
                             .attr("style", "font-size: 12px")
                             .attr("transform", function (d, i) {
@@ -42,7 +41,6 @@ function BrightTooltips (tooltips_settings) {
   var this_class = this;
 
   this.tooltips = function () {
-    var day_distance = tooltips_settings.x_scale(new Date(0)) - tooltips_settings.x_scale(new Date(24*3600*1000));
     var focus = tooltips_settings.canvas().append("g").attr("class", "focus").style("display", "none");
     focus.append("rect")
         .attr("class", "y0")
@@ -114,19 +112,19 @@ function BrightCropper (cropper_settings) {
                     .append("g")
                     .append("defs")
                     .append("clipPath")
-                    .attr("id", "clippast")
+                    .attr("id", "clippast" + cropper_settings.chart_identifier())
                     .append("rect")
                     .attr("width", cropper_settings.canvas_object.inner_width())
                     .attr("height", cropper_settings.canvas_object.inner_height())
 
      cropper_settings.canvas_object.chart_space()
-               .attr("clip-path", "url(#clippast)")
+               .attr("clip-path", "url(#clippast" + cropper_settings.chart_identifier() +")")
 
     cropper_settings.canvas_object.canvas()
                     .append("g")
                     .append("defs")
                     .append("clipPath")
-                    .attr("id", "cropxaxisright")
+                    .attr("id", "cropxaxisright" + cropper_settings.chart_identifier())
                     .append("rect")
                     .attr("transform", "translate(-5," + (cropper_settings.canvas_object.inner_height() - 2) + ")")
                     .attr("width", cropper_settings.canvas_object.inner_width() + 5)
@@ -143,7 +141,7 @@ function BrightCropper (cropper_settings) {
   var this_class = this;
 
   this.initial_dataset = listener_settings.initial_dataset()
-  this.day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(24*3600*1000))
+  this.day_distance    = listener_settings.x_scale(new Date(0)) - listener_settings.x_scale(new Date(listener_settings.time_interval()))
   this.chart           = listener_settings.chart
   this.painted_x_axis  = listener_settings.painted_x_axis
   this.painted_y_axis  = listener_settings.painted_y_axis
@@ -159,7 +157,7 @@ function BrightCropper (cropper_settings) {
     var reader_output = new listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return this_class.initial_dataset }});
 
     var recalculated_scales = new listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - this_class.day_distance }, 'height': listener_settings.height});
-    var recalculated_axis   = new listener_settings.axis({'skip': true, 'painted_x': this_class.painted_x_axis, 'painted_y': this_class.painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
+    var recalculated_axis   = new listener_settings.axis({'chart_identifier': listener_settings.chart_identifier, 'skip': true, 'painted_x': this_class.painted_x_axis, 'painted_y': this_class.painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
 
     var recalculated_area   = d3.svg.area().interpolate("monotone")
                                 .x(function(d) { return listener_settings.x_scale(d.date); })
@@ -194,7 +192,8 @@ function BrightCropper (cropper_settings) {
     legend_settings.inner_width  = listener_settings.width;
     legend_settings.color        = reader_output.color;
     legend_settings.dataset      = reader_output.dataset;
-    d3.select(".legend").remove();
+    legend_settings.chart_identifier = listener_settings.chart_identifier;
+    d3.select(".legend"+listener_settings.chart_identifier()).remove();
     new listener_settings.legend(legend_settings);
 
     tooltips_settings = {}
@@ -382,8 +381,8 @@ function BrightReader (reader_settings) {
 function BrightAxis (axis_settings) {
 
   var this_class    = this;
-  this.x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright)").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
-  this.y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright)").append("g").attr("class", "x axis")
+  this.x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright" + axis_settings.chart_identifier() + " )").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
+  this.y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright" + axis_settings.chart_identifier() + " )").append("g").attr("class", "x axis")
   this.x_axis       = null
   this.y_axis       = null;
 
@@ -526,12 +525,13 @@ function BrightBuilder (chart_elements) {
   }
 
   this.builder.build_axis = function () {
-    var axis_settings        = {};
-    axis_settings.canvas     = this_class.canvas_object.canvas;
-    axis_settings.x_scale    = this_class.scales_object.x_scale;
-    axis_settings.y_scale    = this_class.scales_object.y_scale;
-    axis_settings.height     = this_class.canvas_object.inner_height;
-    this_class.axis_object   = new chart_elements.axis(axis_settings);
+    var axis_settings              = {};
+    axis_settings.canvas           = this_class.canvas_object.canvas;
+    axis_settings.chart_identifier = chart_elements.settings.chart_identifier;
+    axis_settings.x_scale          = this_class.scales_object.x_scale;
+    axis_settings.y_scale          = this_class.scales_object.y_scale;
+    axis_settings.height           = this_class.canvas_object.inner_height;
+    this_class.axis_object         = new chart_elements.axis(axis_settings);
 
     return this_class.builder;
   }
@@ -551,6 +551,7 @@ function BrightBuilder (chart_elements) {
   this.builder.crop_edges = function () {
     var crop_settings = {}
     crop_settings.canvas_object = this_class.canvas_object;
+    crop_settings.chart_identifier = chart_elements.settings.chart_identifier;
     crop_settings.axis_object   = this_class.axis_object;
     this_class.crop_object      = new chart_elements.cropper(crop_settings);
     return this_class.builder;
@@ -577,12 +578,15 @@ function BrightBuilder (chart_elements) {
     legend_settings.inner_width  = this_class.canvas_object.inner_width;
     legend_settings.color        = this_class.dataset_object.color;
     legend_settings.dataset      = this_class.dataset_object.dataset;
+    legend_settings.chart_identifier = chart_elements.settings.chart_identifier;
     this_class.legend_object     = new chart_elements.legend(legend_settings);
     return this_class.builder;
   }
 
   this.builder.listen = function () {
     var listener_settings = {};
+
+    listener_settings.time_interval    = chart_elements.settings.time_interval
     listener_settings.tooltips         = chart_elements.tooltips
     listener_settings.legend           = chart_elements.legend
 
@@ -603,11 +607,12 @@ function BrightBuilder (chart_elements) {
     listener_settings.painted_x_axis   = this_class.axis_object.painted_x_axis;
     listener_settings.painted_y_axis   = this_class.axis_object.painted_y_axis;
     listener_settings.axis             = chart_elements.axis;
+    listener_settings.chart_identifier = chart_elements.settings.chart_identifier;
 
 
     listener_settings.initial_dataset  = chart_elements.settings.initial_dataset;
 
-    return chart_elements.listener(listener_settings);
+    return new chart_elements.listener(listener_settings);
   }
 
   this.builder.build = function () {
@@ -662,12 +667,14 @@ function BrightCanvas (canvas_settings) {
 function Bright() {
   var this_class = this;
 
-  this.width              = 100
-  this.height             = 200
-  this.target             = 'body'
-  this.date_format        = '%y-%b-%d'
-  this.initial_dataset    = []
-  this.data_stream        = null
+  this.width              = 100;
+  this.height             = 200;
+  this.target             = 'body';
+  this.date_format        = '%y-%b-%d';
+  this.time_interval      = 5000;
+  this.initial_dataset    = [];
+  this.data_stream        = null;
+  this.chart_identifier   = "chart" + Math.floor(Math.random()*10000000);
   this.chart_type         = 'stacked-area';
 
   this.settings = function () {
@@ -687,6 +694,15 @@ function Bright() {
 
   this.settings.activate = function() {
     return this_class.settings()
+  }
+
+  this.settings.chart_identifier = function() {
+    return this_class.chart_identifier;
+  }
+
+  this.settings.time_interval = function(interval) {
+    if (!arguments.length) return this_class.time_interval; this_class.time_interval = interval;
+    return this_class.settings;
   }
 
   this.settings.date_format = function(format) {

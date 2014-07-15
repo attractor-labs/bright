@@ -1,8 +1,8 @@
 function BrightAxis (axis_settings) {
 
   var this_class    = this;
-  this.x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright)").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
-  this.y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright)").append("g").attr("class", "x axis")
+  this.x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright" + axis_settings.chart_identifier() + " )").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
+  this.y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright" + axis_settings.chart_identifier() + " )").append("g").attr("class", "x axis")
   this.x_axis       = null
   this.y_axis       = null;
 
