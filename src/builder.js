@@ -90,7 +90,7 @@ function BrightBuilder (chart_elements) {
     var crop_settings = {}
     crop_settings.canvas_object = this_class.canvas_object;
     crop_settings.axis_object   = this_class.axis_object;
-    this_class.crop_object      = chart_elements.cropper(crop_settings);
+    this_class.crop_object      = new chart_elements.cropper(crop_settings);
     return this_class.builder;
   }
 
@@ -103,7 +103,7 @@ function BrightBuilder (chart_elements) {
     tooltips_settings.inner_width  = this_class.canvas_object.inner_width;
     tooltips_settings.color        = this_class.dataset_object.color;
     tooltips_settings.dataset      = this_class.dataset_object.dataset;
-    this_class.tooltips_object     = chart_elements.tooltips(tooltips_settings);
+    this_class.tooltips_object     = new chart_elements.tooltips(tooltips_settings);
     return this_class.builder;
   }
 
@@ -115,7 +115,7 @@ function BrightBuilder (chart_elements) {
     legend_settings.inner_width  = this_class.canvas_object.inner_width;
     legend_settings.color        = this_class.dataset_object.color;
     legend_settings.dataset      = this_class.dataset_object.dataset;
-    this_class.legend_object     = chart_elements.legend(legend_settings);
+    this_class.legend_object     = new chart_elements.legend(legend_settings);
     return this_class.builder;
   }
 

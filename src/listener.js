@@ -53,7 +53,7 @@
     legend_settings.color        = reader_output.color;
     legend_settings.dataset      = reader_output.dataset;
     d3.select(".legend").remove();
-    listener_settings.legend(legend_settings);
+    new listener_settings.legend(legend_settings);
 
     tooltips_settings = {}
     tooltips_settings.x_scale      = recalculated_scales.x_scale;
@@ -64,7 +64,7 @@
     tooltips_settings.color        = reader_output.color;
     tooltips_settings.dataset      = reader_output.dataset;
     tooltips_settings.shift        = 1;
-    listener_settings.tooltips(tooltips_settings)
+    new listener_settings.tooltips(tooltips_settings)
 
     area = recalculated_area;
 

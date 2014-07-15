@@ -1,6 +1,6 @@
 function BrightCropper (cropper_settings) {
 
-  function cropper() {
+  this.cropper = function () {
     var output = {}
     cropper_settings.canvas_object.canvas()
                     .append("g")
@@ -27,5 +27,5 @@ function BrightCropper (cropper_settings) {
     return output;
   }
 
-  return cropper();
+  return this.cropper();
 }
