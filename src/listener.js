@@ -17,7 +17,7 @@
     var reader_output = new listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return initial_dataset }});
 
     var recalculated_scales = new listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
-    var recalculated_axis   = listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
+    var recalculated_axis   = new listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
 
     var recalculated_area   = d3.svg.area().interpolate("monotone")
                                 .x(function(d) { return listener_settings.x_scale(d.date); })
@@ -33,7 +33,8 @@
 
     chart_place.enter().append("path")
                        .attr("d", function(d) { return area(d.values); })
-                       .transition().duration(1000).attr("transform", "translate(" + day_distance*(steps) + ",0)")
+                       .transition().duration(1000)
+                       .attr("transform", "translate(" + day_distance*(steps) + ",0)")
                        .style("fill", function(d) { return reader_output.color(d.name); })
                        .attr("d", function(d) { return recalculated_area(d.values); });
 

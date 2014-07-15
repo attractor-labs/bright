@@ -69,7 +69,7 @@ function BrightBuilder (chart_elements) {
     axis_settings.x_scale    = this_class.scales_object.x_scale;
     axis_settings.y_scale    = this_class.scales_object.y_scale;
     axis_settings.height     = this_class.canvas_object.inner_height;
-    this_class.axis_object   = chart_elements.axis(axis_settings);
+    this_class.axis_object   = new chart_elements.axis(axis_settings);
 
     return this_class.builder;
   }

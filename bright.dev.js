@@ -177,7 +177,7 @@ function BrightCropper (cropper_settings) {
     var reader_output = new listener_settings.reader({'date_format': listener_settings.date_format, 'dataset': function (){ return initial_dataset }});
 
     var recalculated_scales = new listener_settings.scales({'y_max': reader_output.y_max, 'dataset': reader_output.dataset, 'width': function () { return listener_settings.width() - day_distance }, 'height': listener_settings.height});
-    var recalculated_axis   = listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
+    var recalculated_axis   = new listener_settings.axis({'skip': true, 'painted_x': painted_x_axis, 'painted_y': painted_y_axis,'canvas': listener_settings.canvas, 'x_scale': recalculated_scales.x_scale, 'y_scale': recalculated_scales.y_scale, 'height': listener_settings.height});
 
     var recalculated_area   = d3.svg.area().interpolate("monotone")
                                 .x(function(d) { return listener_settings.x_scale(d.date); })
@@ -193,7 +193,8 @@ function BrightCropper (cropper_settings) {
 
     chart_place.enter().append("path")
                        .attr("d", function(d) { return area(d.values); })
-                       .transition().duration(1000).attr("transform", "translate(" + day_distance*(steps) + ",0)")
+                       .transition().duration(1000)
+                       .attr("transform", "translate(" + day_distance*(steps) + ",0)")
                        .style("fill", function(d) { return reader_output.color(d.name); })
                        .attr("d", function(d) { return recalculated_area(d.values); });
 
@@ -398,23 +399,24 @@ function BrightReader (reader_settings) {
 
 function BrightAxis (axis_settings) {
 
-  var x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright)").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
-    , y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright)").append("g").attr("class", "x axis")
-    , x_axis       = null
-    , y_axis       = null;
+  var this_class    = this;
+  this.x_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxaxisright)").append("g").attr("class", "x axis").attr("transform", "translate(0," + axis_settings.height() + ")")
+  this.y_axis_place = axis_settings.canvas().append("g").attr("clip-path", "url(#cropxayisright)").append("g").attr("class", "x axis")
+  this.x_axis       = null
+  this.y_axis       = null;
 
-  function axis() {
+  this.axis = function () {
     var output = {};
 
-    output.x_axis = axis.x_axis();
-    output.y_axis = axis.y_axis();
+    output.x_axis = this_class.axis.x_axis();
+    output.y_axis = this_class.axis.y_axis();
 
-    output.x_axis_place = x_axis_place;
-    output.y_axis_place = y_axis_place;
+    output.x_axis_place = this_class.x_axis_place;
+    output.y_axis_place = this_class.y_axis_place;
 
 
-    var paint_x_target    = axis_settings.painted_x || x_axis_place;
-    var paint_y_target    = axis_settings.painted_y || y_axis_place;
+    var paint_x_target    = axis_settings.painted_x || this_class.x_axis_place;
+    var paint_y_target    = axis_settings.painted_y || this_class.y_axis_place;
     output.painted_x_axis = paint_x_target.call(output.x_axis);
 
     if (!axis_settings.skip) {
@@ -424,21 +426,21 @@ function BrightAxis (axis_settings) {
     return output;
   }
 
-  axis.x_axis = function () {
-    if (x_axis) { return x_axis } else {
-      x_axis = d3.svg.axis().scale(axis_settings.x_scale).orient("bottom");
-      return x_axis;
+  this.axis.x_axis = function () {
+    if (this_class.x_axis) { return this_class.x_axis } else {
+      this_class.x_axis = d3.svg.axis().scale(axis_settings.x_scale).orient("bottom");
+      return this_class.x_axis;
     }
   }
 
-  axis.y_axis = function () {
-    if (y_axis) { return y_axis } else {
-      y_axis = d3.svg.axis().scale(axis_settings.y_scale).orient("left");
-      return y_axis;
+  this.axis.y_axis = function () {
+    if (this_class.y_axis) { return this_class.y_axis } else {
+      this_class.y_axis = d3.svg.axis().scale(axis_settings.y_scale).orient("left");
+      return this_class.y_axis;
     }
   }
 
-  return axis();
+  return this_class.axis();
 }
 
 function BrightScales (scales_settings) {
@@ -547,7 +549,7 @@ function BrightBuilder (chart_elements) {
     axis_settings.x_scale    = this_class.scales_object.x_scale;
     axis_settings.y_scale    = this_class.scales_object.y_scale;
     axis_settings.height     = this_class.canvas_object.inner_height;
-    this_class.axis_object   = chart_elements.axis(axis_settings);
+    this_class.axis_object   = new chart_elements.axis(axis_settings);
 
     return this_class.builder;
   }
