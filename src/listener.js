@@ -84,7 +84,7 @@
     d3.keys(datapoint).forEach(function (key) {
       var i = 0;
       while (i < id_length) {
-        if (!this_class.initial_dataset[i][key]) { this_class.initial_dataset[i][key] = '0' };
+        if (!this_class.initial_dataset[i][key]) { parseFloat(this_class.initial_dataset[i][key]) < 0.02 };
         i++;
       }
     });
@@ -92,7 +92,7 @@
     d3.keys(this_class.initial_dataset[0]).forEach(function (key) {
       var i = 0;
       while (i < id_length) {
-        if (!this_class.initial_dataset[i][key]) { this_class.initial_dataset[i][key] = '0' };
+        if (!this_class.initial_dataset[i][key]) { parseFloat(this_class.initial_dataset[i][key]) < 0.02 };
         i++;
       }
       // console.log(JSON.stringify(initial_dataset))
