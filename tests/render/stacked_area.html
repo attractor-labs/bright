@@ -73,13 +73,33 @@ sleep(5000, another_one); sleep(10000, another_two); sleep(15000, another_three)
 
 
 
-var buggy_dataset = [{'date':'2014-7-17-21-25-10','techcrunch.com':0},{'date':'2014-7-17-21-25-15','techcrunch.com':0},{'date':'2014-7-17-21-25-20','techcrunch.com':0},{'date':'2014-7-17-21-25-25','techcrunch.com':0},{'date':'2014-7-17-21-25-30','techcrunch.com':0},{'date':'2014-7-17-21-25-35','techcrunch.com':0},{'date':'2014-7-17-21-25-40','techcrunch.com':0},{'date':'2014-7-17-21-25-45','techcrunch.com':0},{'date':'2014-7-17-21-25-50','techcrunch.com':1},{'date':'2014-7-17-21-25-55','techcrunch.com':0},{'date':'2014-7-17-21-26-0','techcrunch.com':0},{'date':'2014-7-17-21-26-5','techcrunch.com':0}];
+var buggy_dataset = [{'date':'2014-7-17-21-25-10','no data':0.01},{'date':'2014-7-17-21-25-15','no data':0.01},{'date':'2014-7-17-21-25-20','no data':0.01},{'date':'2014-7-17-21-25-25','no data':0.01},{'date':'2014-7-17-21-25-30','no data':0.01},{'date':'2014-7-17-21-25-35','no data':0.01},{'date':'2014-7-17-21-25-40','no data':0.01},{'date':'2014-7-17-21-25-45','no data':0.01},{'date':'2014-7-17-21-25-50','no data':0.01},{'date':'2014-7-17-21-25-55','no data':0.01},{'date':'2014-7-17-21-26-0','no data':0.01},{'date':'2014-7-17-21-26-5','no data':0.01}];
+// var buggy_dataset = [{"date":"2014-7-18-21-30-55","no data":0.01},{"date":"2014-7-18-21-31-00","no data":0.01},{"date":"2014-7-18-21-31-05","no data":0.01}]
 var buggy_chart = new Bright().width(560).height(220).initial_dataset(buggy_dataset).date_format('%Y-%m-%d-%H-%M-%S').time_interval(5000).chart_type('stacked-area').target('body').activate();
-function buggy_one()   { buggy_chart.push({'date':'2014-7-17-21-26-9','techcrunch.com':0}) };
+
+// sleep(5000, function () { buggy_chart.push({"date":"2014-7-18-21-31-10","no data":0.01}) })
+// sleep(10000, function () { buggy_chart.push({"date":"2014-7-18-21-31-15","no data":0.01}) })
+// sleep(15000, function () { buggy_chart.push({"date":"2014-7-18-21-31-20","no data":0.01}) })
+// sleep(20000, function () { buggy_chart.push({"date":"2014-7-18-21-31-25","no data":0.01}) })
+// sleep(25000, function () { buggy_chart.push({"date":"2014-7-18-21-31-30","techcrunch.com":0.01}) })
+// sleep(30000, function () { buggy_chart.push({"date":"2014-7-18-21-31-35","techcrunch.com":1}) })
+// sleep(35000, function () { buggy_chart.push({"date":"2014-7-18-21-31-40","techcrunch.com":0.01}) })
+// sleep(40000, function () { buggy_chart.push({"date":"2014-7-18-21-31-45","techcrunch.com":0.01}) })
+// sleep(45000, function () { buggy_chart.push({"date":"2014-7-18-21-31-50","techcrunch.com":0.01}) })
+
+
+
+function buggy_one()   { buggy_chart.push({'date':'2014-7-17-21-26-10', 'techcrunch.com':1}) };
+function buggy_two()   { buggy_chart.push({'date':'2014-7-17-21-26-15','techcrunch.com':0}) };
+function buggy_three()   { buggy_chart.push({'date':'2014-7-17-21-26-20','techcrunch.com':0}) };
 sleep(5000, buggy_one);
+sleep(10000, buggy_two);
 
 // [{"date":"2014-7-17-21-25-10","techcrunch.com":0},{"date":"2014-7-17-21-25-15","techcrunch.com":0},{"date":"2014-7-17-21-25-20","techcrunch.com":0},{"date":"2014-7-17-21-25-25","techcrunch.com":0},{"date":"2014-7-17-21-25-30","techcrunch.com":0},{"date":"2014-7-17-21-25-35","techcrunch.com":0},{"date":"2014-7-17-21-25-40","techcrunch.com":0},{"date":"2014-7-17-21-25-45","techcrunch.com":0},{"date":"2014-7-17-21-25-50","techcrunch.com":1},{"date":"2014-7-17-21-25-55","techcrunch.com":0},{"date":"2014-7-17-21-26-0","techcrunch.com":0},{"date":"2014-7-17-21-26-5","techcrunch.com":0}] 1:104
 // {"stamp":"2014-7-17-21-26-10","sources":["techcrunch.com"]} 1:111
 // [{"date":"2014-7-17-21-26-9","techcrunch.com":0}]
 
 </script>
+
+
+
