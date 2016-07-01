@@ -5,6 +5,9 @@ Another glance at the issue of interactive realtime charts based on D3.js.
 
 ## Example
 
+
+![example](http://mac-r.github.io/img/bright_screenshot.png "Example")
+
 ```javascript
 
 initialDatasetExtractor(function (error, initial_dataset) {
